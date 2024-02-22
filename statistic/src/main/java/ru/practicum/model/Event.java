@@ -34,4 +34,5 @@ public class Event {
         this.ip = ip;
         this.dt = LocalDateTime.now();
     }
+
 }
