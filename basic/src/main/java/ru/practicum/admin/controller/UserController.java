@@ -12,6 +12,7 @@ import ru.practicum.admin.model.UserOut;
 import ru.practicum.admin.service.UserService;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,13 +44,11 @@ public class UserController {
 
         Pageable reqPage = PageRequest.of(from / size, size, Sort.by("id").ascending());
 
-        if (ids == null) return userService.getAll(reqPage);
+        List<Long> idUsers = new ArrayList<>();
+        if (ids != null) idUsers = Arrays.stream(ids.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
 
-        return userService.gets(
-                Arrays.stream(ids.split(","))
-                        .map(Long::parseLong)
-                        .collect(Collectors.toList()),
-                reqPage
-        );
+        return userService.gets(idUsers, reqPage);
     }
 }

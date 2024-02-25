@@ -45,14 +45,16 @@ public class UserService {
     }
 
     public List<UserOut> gets(List<Long> ids, Pageable reqPage) {
+
+        if (ids.size() == 0) {
+            return userRepository.getAllLimitNoQueringMethod(reqPage).stream()
+                    .map(UserMapper::toUserOut)
+                    .collect(Collectors.toList());
+        }
+
         return userRepository.getAllUserContainsAndLimitNotQueringMethod(ids, reqPage).stream()
                 .map(UserMapper::toUserOut)
                 .collect(Collectors.toList());
     }
 
-    public List<UserOut> getAll(Pageable reqPage) {
-        return userRepository.getAllLimitNoQueringMethod(reqPage).stream()
-                .map(UserMapper::toUserOut)
-                .collect(Collectors.toList());
-    }
 }
