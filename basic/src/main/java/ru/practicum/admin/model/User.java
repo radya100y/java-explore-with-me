@@ -27,4 +27,9 @@ public class User {
     @Size(max = 512)
     @Column(nullable = false)
     private String email;
+
+    public User (String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
