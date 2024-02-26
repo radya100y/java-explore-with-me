@@ -15,23 +15,23 @@ public class MessageCreateOut {
     private Long id;
     private String annotation;
     private CategoryOut category;
-    private LocalDateTime createdOn;
     private String description;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime eventDate;
-
     private UserOutWithoutEmail initiator;
     private Location location;
     private Boolean paid;
     private Integer participantLimit;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime publishedOn;
-
     private Boolean requestModeration;
     private MessageStatus state;
     private String title;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    private LocalDateTime createdOn;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    private LocalDateTime eventDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    private LocalDateTime publishedOn;
 
     private Integer views;
     private Integer confirmedRequests;

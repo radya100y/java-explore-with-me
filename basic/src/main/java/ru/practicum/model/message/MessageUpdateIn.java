@@ -9,17 +9,14 @@ import java.time.LocalDateTime;
 
 @Getter
 @ToString
-public class MessageCreateIn {
+public class MessageUpdateIn {
 
     @Size(max = 2000, min = 20, message = "поле annotation должно содержать между 20 и 2000 символов")
-    @NotBlank
     private String annotation;
 
-    @NotNull(message = "поле category должно быть заполнено")
     private Long category;
 
     @Size(max = 7000, min = 20, message = "поле description должно содержать между 20 и 7000 символов")
-    @NotBlank
     private String description;
 
     @Future(message = "поле eventDate должно быть в будующем")
@@ -28,14 +25,11 @@ public class MessageCreateIn {
 
     private Location location;
 
-    @NotNull(message = "поле paid должно быть заполнено")
     private Boolean paid;
 
-    @NotNull(message = "поле participantLimit должно быть заполнено")
     @Positive(message = "поле participantLimit должно быть больше 0")
     private Integer participantLimit;
 
-    @NotNull(message = "поле requestModeration должно быть заполнено")
     private Boolean requestModeration;
 
     @Size(max = 120, min = 3, message = "поле title должно содержать между 3 и 120 символов")

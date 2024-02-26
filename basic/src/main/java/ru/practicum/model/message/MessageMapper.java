@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @UtilityClass
 public class MessageMapper {
 
-    public static Message toMessage(MessageCreateIn messageIn, Category category, User user) {
+    public static Message toMessageCreate(MessageCreateIn messageIn, Category category, User user) {
         return Message.builder()
                 .annotation(messageIn.getAnnotation())
                 .category(category)
@@ -23,7 +23,6 @@ public class MessageMapper {
                 .participantLimit(messageIn.getParticipantLimit())
                 .requestModeration(messageIn.getRequestModeration())
                 .title(messageIn.getTitle())
-                .state(MessageStatus.PENDING)
                 .initiator(user)
                 .createdOn(LocalDateTime.now())
                 .build();
@@ -47,6 +46,23 @@ public class MessageMapper {
                 .title(message.getTitle())
                 .views(1000)
                 .confirmedRequests(1000)
+                .build();
+    }
+
+    public static Message toMessageUpdate(MessageUpdateIn messageIn, Category category, User user) {
+        return Message.builder()
+                .annotation(messageIn.getAnnotation())
+                .category(category)
+                .description(messageIn.getDescription())
+                .eventDate(messageIn.getEventDate())
+                .lon(messageIn.getLocation().getLon())
+                .lat(messageIn.getLocation().getLat())
+                .paid(messageIn.getPaid())
+                .participantLimit(messageIn.getParticipantLimit())
+                .requestModeration(messageIn.getRequestModeration())
+                .title(messageIn.getTitle())
+                .initiator(user)
+                .createdOn(LocalDateTime.now())
                 .build();
     }
 }

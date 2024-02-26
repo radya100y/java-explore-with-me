@@ -2,6 +2,7 @@ package ru.practicum.model.message;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.user.User;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "message", schema = "public")
 @Getter
+@Setter
 @NoArgsConstructor
 @SuperBuilder
 public class Message {
