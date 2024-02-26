@@ -7,8 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.admin.model.CategoryIn;
+import ru.practicum.admin.model.CategoryOut;
 import ru.practicum.admin.model.UserIn;
 import ru.practicum.admin.model.UserOut;
+import ru.practicum.admin.service.CategoryService;
 import ru.practicum.admin.service.UserService;
 
 import javax.validation.Valid;
@@ -20,10 +23,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "/admin")
 @RequiredArgsConstructor
-public class UserController {
+public class AdminController {
 
     @Autowired
     private final UserService userService;
+
+    @Autowired
+    private final CategoryService categoryService;
+
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,5 +57,24 @@ public class UserController {
                 .collect(Collectors.toList());
 
         return userService.gets(idUsers, reqPage);
+    }
+
+
+    @PostMapping("/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryOut save(@Valid @RequestBody CategoryIn categoryIn) {
+        return categoryService.add(categoryIn);
+    }
+
+    @PatchMapping("/categories/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryOut modify(@PathVariable("id") long categoryId, @Valid @RequestBody CategoryIn categoryIn) {
+        return categoryService.update(categoryId, categoryIn);
+    }
+
+    @DeleteMapping("/categories/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public CategoryOut deleteCategory(@PathVariable("id") long categoryId) {
+        return categoryService.delete(categoryId);
     }
 }
