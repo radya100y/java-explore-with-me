@@ -19,4 +19,8 @@ public class UserMapper {
                 user.getEmail()
         );
     }
+
+    public static UserOutWithoutEmail toUserOutWithoutEmail(User user) {
+        return new UserOutWithoutEmail(user.getId(), user.getName());
+    }
 }

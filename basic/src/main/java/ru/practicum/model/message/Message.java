@@ -2,6 +2,7 @@ package ru.practicum.model.message;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.user.User;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "message", schema = "public")
 @Getter
 @NoArgsConstructor
+@SuperBuilder
 public class Message {
 
     @Id
@@ -34,8 +36,8 @@ public class Message {
     @Column(name = "lat")
     private Float lat;
 
-    @Column(name = "lan")
-    private Float lan;
+    @Column(name = "lon")
+    private Float lon;
 
     @Column(name = "paid")
     private Boolean paid;
