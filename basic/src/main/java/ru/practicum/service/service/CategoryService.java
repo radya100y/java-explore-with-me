@@ -1,10 +1,13 @@
-package ru.practicum.admin.service;
+package ru.practicum.service.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.admin.model.*;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.category.CategoryIn;
+import ru.practicum.model.category.CategoryMapper;
+import ru.practicum.model.category.CategoryOut;
 import ru.practicum.error.AlreadyExistException;
 import ru.practicum.error.NotFoundException;
 

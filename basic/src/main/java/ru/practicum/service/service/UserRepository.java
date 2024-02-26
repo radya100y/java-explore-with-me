@@ -1,9 +1,9 @@
-package ru.practicum.admin.service;
+package ru.practicum.service.service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.practicum.admin.model.User;
+import ru.practicum.model.user.User;
 
 import org.springframework.data.domain.Pageable;
 import java.util.List;

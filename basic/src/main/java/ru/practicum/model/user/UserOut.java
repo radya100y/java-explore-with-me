@@ -1,12 +1,13 @@
-package ru.practicum.admin.model;
+package ru.practicum.model.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class CategoryOut {
+public class UserOut {
 
     private long id;
     private String name;
+    private String email;
 }

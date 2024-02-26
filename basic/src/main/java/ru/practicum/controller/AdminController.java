@@ -1,4 +1,4 @@
-package ru.practicum.admin.controller;
+package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.admin.model.CategoryIn;
-import ru.practicum.admin.model.CategoryOut;
-import ru.practicum.admin.model.UserIn;
-import ru.practicum.admin.model.UserOut;
-import ru.practicum.admin.service.CategoryService;
-import ru.practicum.admin.service.UserService;
+import ru.practicum.model.category.CategoryIn;
+import ru.practicum.model.category.CategoryOut;
+import ru.practicum.model.user.UserIn;
+import ru.practicum.model.user.UserOut;
+import ru.practicum.service.service.CategoryService;
+import ru.practicum.service.service.UserService;
 
 import javax.validation.Valid;
 import java.util.ArrayList;

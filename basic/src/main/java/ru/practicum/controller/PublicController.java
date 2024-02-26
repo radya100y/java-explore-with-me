@@ -1,4 +1,4 @@
-package ru.practicum.admin.controller;
+package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,8 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.admin.model.CategoryOut;
-import ru.practicum.admin.service.CategoryService;
+import ru.practicum.model.category.CategoryOut;
+import ru.practicum.service.service.CategoryService;
 
 import java.util.List;
 

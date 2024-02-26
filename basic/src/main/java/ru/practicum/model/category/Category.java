@@ -1,4 +1,4 @@
-package ru.practicum.admin.model;
+package ru.practicum.model.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,34 +6,25 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "users", schema = "public")
+@Table(name = "category", schema = "public")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class User {
+@NoArgsConstructor
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Size(max = 256)
+    @Size(min = 1, max = 50)
     @Column(nullable = false)
     private String name;
 
-    @Email
-    @NotBlank
-    @Size(max = 512)
-    @Column(nullable = false)
-    private String email;
-
-    public User(String name, String email) {
+    public Category(String name) {
         this.name = name;
-        this.email = email;
     }
 }
