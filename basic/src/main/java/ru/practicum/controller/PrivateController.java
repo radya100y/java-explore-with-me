@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.message.MessageCreateIn;
 import ru.practicum.model.message.MessageCreateOut;
 import ru.practicum.model.message.MessageUpdateIn;
+import ru.practicum.model.request.RequestOut;
 import ru.practicum.service.service.MessageService;
+import ru.practicum.service.service.RequestService;
 
 import javax.validation.Valid;
 
@@ -19,9 +21,12 @@ public class PrivateController {
     @Autowired
     private final MessageService messageService;
 
+    @Autowired
+    private final RequestService requestService;
+
     @PostMapping("/{id}/events")
     @ResponseStatus(HttpStatus.CREATED)
-    public MessageCreateOut save(@Valid @RequestBody MessageCreateIn messageCreateIn,
+    public MessageCreateOut saveEvent(@Valid @RequestBody MessageCreateIn messageCreateIn,
                                  @PathVariable("id") long userId) {
         System.out.println(messageCreateIn);
         return messageService.add(messageCreateIn, userId);
@@ -29,9 +34,23 @@ public class PrivateController {
 
     @PatchMapping("/{userId}/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public MessageCreateOut update(@Valid @RequestBody MessageUpdateIn messageUpdateIn,
+    public MessageCreateOut updateEvent(@Valid @RequestBody MessageUpdateIn messageUpdateIn,
                                    @PathVariable("userId") long userId,
                                    @PathVariable("eventId") long eventId) {
         return messageService.update(messageUpdateIn, userId, eventId);
+    }
+
+    @PostMapping("/{userId}/requests")
+    @ResponseStatus(HttpStatus.CREATED)
+    public RequestOut saveRequest(@PathVariable("userId") long userId,
+                        @RequestParam(required = true) long eventId) {
+        return requestService.addRequest(userId, eventId);
+    }
+
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
+    @ResponseStatus(HttpStatus.OK)
+    public RequestOut cancelRequest(@PathVariable("userId") long userId,
+                             @PathVariable("requestId") long requestId) {
+        return requestService.cancelRequest(userId, requestId);
     }
 }
