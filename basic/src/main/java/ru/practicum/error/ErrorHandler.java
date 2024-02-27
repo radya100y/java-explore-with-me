@@ -35,4 +35,15 @@ public class ErrorHandler {
                 exc.getMessage(),
                 LocalDateTime.now());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleConflictException(final ConflictException exc) {
+        log.debug("Получен статус 409 Conflict {}", exc.getMessage(), exc);
+        return new ErrorResponse(
+                HttpStatus.CONFLICT,
+                exc.getLocalizedMessage(),
+                exc.getMessage(),
+                LocalDateTime.now());
+    }
 }

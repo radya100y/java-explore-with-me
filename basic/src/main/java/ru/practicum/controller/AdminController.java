@@ -9,9 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.category.CategoryIn;
 import ru.practicum.model.category.CategoryOut;
+import ru.practicum.model.message.MessageCreateOut;
+import ru.practicum.model.message.MessageUpdateIn;
 import ru.practicum.model.user.UserIn;
 import ru.practicum.model.user.UserOut;
 import ru.practicum.service.service.CategoryService;
+import ru.practicum.service.service.MessageService;
 import ru.practicum.service.service.UserService;
 
 import javax.validation.Valid;
@@ -30,6 +33,9 @@ public class AdminController {
 
     @Autowired
     private final CategoryService categoryService;
+
+    @Autowired
+    private final MessageService messageService;
 
 
     @PostMapping("/users")
@@ -76,5 +82,12 @@ public class AdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public CategoryOut deleteCategory(@PathVariable("id") long categoryId) {
         return categoryService.delete(categoryId);
+    }
+
+    @PatchMapping("/events/{eventId}") //админ редактирует событие
+    @ResponseStatus(HttpStatus.OK)
+    public MessageCreateOut update(@Valid @RequestBody MessageUpdateIn messageUpdateIn,
+                                   @PathVariable("eventId") long eventId) {
+        return messageService.updateAdmin(messageUpdateIn, eventId);
     }
 }
