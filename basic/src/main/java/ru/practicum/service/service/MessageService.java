@@ -47,8 +47,8 @@ public class MessageService {
         Message oldMessage = messageRepository.findById(messageId)
                 .orElseThrow(() -> new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
 
-        if (oldMessage.getState().equals(MessageStatus.PUBLISHED))
-            throw new ConflictException("Редактирование опубликованных событий запрещено");
+        if (!oldMessage.getState().equals(MessageStatus.PENDING))
+            throw new ConflictException("Редактирование этих событий запрещено");
 
         if (message.getAnnotation() != null) oldMessage.setAnnotation(message.getAnnotation());
         if (message.getDescription() != null) oldMessage.setDescription(message.getDescription());
@@ -62,7 +62,7 @@ public class MessageService {
         if (message.getRequestModeration() != null) oldMessage.setRequestModeration(message.getRequestModeration());
         if (message.getTitle() != null) oldMessage.setTitle(message.getTitle());
 
-        if (message.getStateAction().equals(MessageStateAction.CANCEL_REVIEW))
+        if (message.getStateAction().equals(MessageStateAction.REJECT_EVENT))
             oldMessage.setState(MessageStatus.CANCELED);
 
         return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
@@ -72,6 +72,9 @@ public class MessageService {
 
         Message oldMessage = messageRepository.findById(messageId)
                 .orElseThrow(() -> new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
+
+        if (!oldMessage.getState().equals(MessageStatus.PENDING))
+            throw new ConflictException("Редактирование этих событий запрещено");
 
         if (message.getAnnotation() != null) oldMessage.setAnnotation(message.getAnnotation());
         if (message.getDescription() != null) oldMessage.setDescription(message.getDescription());
@@ -86,7 +89,7 @@ public class MessageService {
         if (message.getTitle() != null) oldMessage.setTitle(message.getTitle());
 
         switch (message.getStateAction()) {
-            case CANCEL_REVIEW: {
+            case REJECT_EVENT: {
                 oldMessage.setState(MessageStatus.CANCELED);
                 break;
             } case PUBLISH_EVENT: {

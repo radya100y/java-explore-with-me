@@ -4,15 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.practicum.error.ConflictException;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.category.CategoryIn;
 import ru.practicum.model.category.CategoryMapper;
 import ru.practicum.model.category.CategoryOut;
-import ru.practicum.error.AlreadyExistException;
 import ru.practicum.error.NotFoundException;
 
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,26 +24,34 @@ public class CategoryService {
     @Autowired
     private final CategoryRepository categoryRepository;
 
-    @Transactional
+//    @Transactional()
     public CategoryOut add(CategoryIn categoryIn) {
         try {
             return CategoryMapper.toCategoryOut(categoryRepository.save(CategoryMapper.toCategory(categoryIn)));
         } catch (DataIntegrityViolationException exc) {
-            throw new AlreadyExistException("Категория с именем " + categoryIn.getName() + " уже существует");
+            throw new ConflictException("Категория с именем " + categoryIn.getName() + " уже существует");
         }
     }
 
-    @Transactional
+//    @Transactional
     public CategoryOut delete(long id) {
         CategoryOut category = getCategory(id);
-        categoryRepository.deleteById(id);
+        try {
+            categoryRepository.deleteById(id);
+        } catch (DataIntegrityViolationException exc) {
+            throw new ConflictException("Категория не может быть удалена");
+        }
         return category;
     }
 
-    @Transactional
+//    @Transactional
     public CategoryOut update(long id, CategoryIn categoryIn) {
         getCategory(id);
-        return CategoryMapper.toCategoryOut(categoryRepository.save(new Category(id, categoryIn.getName())));
+        try {
+            return CategoryMapper.toCategoryOut(categoryRepository.save(new Category(id, categoryIn.getName())));
+        } catch (DataIntegrityViolationException exc) {
+            throw new ConflictException("Категория с именем " + categoryIn.getName() + " уже существует");
+        }
     }
 
     public CategoryOut getCategory(long id) {

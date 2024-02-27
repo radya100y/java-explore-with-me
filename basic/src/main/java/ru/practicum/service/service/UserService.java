@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.practicum.error.ConflictException;
 import ru.practicum.model.user.UserIn;
 import ru.practicum.model.user.UserMapper;
 import ru.practicum.model.user.UserOut;
-import ru.practicum.error.AlreadyExistException;
 import ru.practicum.error.NotFoundException;
 
 import javax.transaction.Transactional;
@@ -27,7 +27,7 @@ public class UserService {
         try {
             return UserMapper.toUserOut(userRepository.save(UserMapper.toUser(userIn)));
         } catch (DataIntegrityViolationException exc) {
-            throw new AlreadyExistException("Пользователь с адресом " + userIn.getEmail() + " уже существует");
+            throw new ConflictException("Пользователь с адресом " + userIn.getEmail() + " уже существует");
         }
     }
 

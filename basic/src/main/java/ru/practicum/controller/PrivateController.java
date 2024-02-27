@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.message.MessageCreateIn;
 import ru.practicum.model.message.MessageCreateOut;
 import ru.practicum.model.message.MessageUpdateIn;
+import ru.practicum.model.request.RequestConfirmIn;
+import ru.practicum.model.request.RequestConfirmOut;
 import ru.practicum.model.request.RequestOut;
 import ru.practicum.service.service.MessageService;
 import ru.practicum.service.service.RequestService;
@@ -52,5 +54,13 @@ public class PrivateController {
     public RequestOut cancelRequest(@PathVariable("userId") long userId,
                              @PathVariable("requestId") long requestId) {
         return requestService.cancelRequest(userId, requestId);
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
+    public RequestConfirmOut approveRequests(@PathVariable("userId") long userId,
+                                             @PathVariable("eventId") long eventId,
+                                             @Valid @RequestBody(required = false) RequestConfirmIn requestConfirmIn) {
+        return requestService.updateRequests(userId, eventId, requestConfirmIn);
     }
 }

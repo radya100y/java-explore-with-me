@@ -1,6 +1,6 @@
 package ru.practicum.model.message;
 
 public enum MessageStateAction {
-    CANCEL_REVIEW,
+    REJECT_EVENT,
     PUBLISH_EVENT
 }
