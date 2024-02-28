@@ -47,7 +47,7 @@ public class MessageService {
         Message oldMessage = messageRepository.findById(messageId)
                 .orElseThrow(() -> new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
 
-        if (!oldMessage.getState().equals(MessageStatus.PENDING))
+        if (oldMessage.getState().equals(MessageStatus.PUBLISHED))
             throw new ConflictException("Редактирование этих событий запрещено");
 
         if (message.getAnnotation() != null) oldMessage.setAnnotation(message.getAnnotation());
@@ -62,8 +62,11 @@ public class MessageService {
         if (message.getRequestModeration() != null) oldMessage.setRequestModeration(message.getRequestModeration());
         if (message.getTitle() != null) oldMessage.setTitle(message.getTitle());
 
-        if (message.getStateAction().equals(MessageStateAction.REJECT_EVENT))
+        if (message.getStateAction().equals(MessageStateAction.CANCEL_REVIEW)) {
             oldMessage.setState(MessageStatus.CANCELED);
+        } else if (message.getStateAction().equals(MessageStateAction.SEND_TO_REVIEW)) {
+            oldMessage.setState(MessageStatus.PENDING);
+        }
 
         return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
     }

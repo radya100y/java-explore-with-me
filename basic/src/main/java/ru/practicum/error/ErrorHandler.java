@@ -2,6 +2,7 @@ package ru.practicum.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -39,6 +40,17 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflictException(final ConflictException exc) {
+        log.debug("Получен статус 409 Conflict {}", exc.getMessage(), exc);
+        return new ErrorResponse(
+                HttpStatus.CONFLICT,
+                exc.getLocalizedMessage(),
+                exc.getMessage(),
+                LocalDateTime.now());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNoBody(final HttpMessageNotReadableException exc) {
         log.debug("Получен статус 409 Conflict {}", exc.getMessage(), exc);
         return new ErrorResponse(
                 HttpStatus.CONFLICT,

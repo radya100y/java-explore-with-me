@@ -60,7 +60,7 @@ public class PrivateController {
     @ResponseStatus(HttpStatus.OK)
     public RequestConfirmOut approveRequests(@PathVariable("userId") long userId,
                                              @PathVariable("eventId") long eventId,
-                                             @Valid @RequestBody(required = false) RequestConfirmIn requestConfirmIn) {
+                                             @Valid @RequestBody RequestConfirmIn requestConfirmIn) {
         return requestService.updateRequests(userId, eventId, requestConfirmIn);
     }
 }
