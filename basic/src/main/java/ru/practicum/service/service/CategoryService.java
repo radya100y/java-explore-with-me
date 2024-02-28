@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CategoryService {
 
     @Autowired
     private final CategoryRepository categoryRepository;
 
-//    @Transactional()
     public CategoryOut add(CategoryIn categoryIn) {
         try {
             return CategoryMapper.toCategoryOut(categoryRepository.save(CategoryMapper.toCategory(categoryIn)));
@@ -33,7 +33,6 @@ public class CategoryService {
         }
     }
 
-//    @Transactional
     public CategoryOut delete(long id) {
         CategoryOut category = getCategory(id);
         try {
@@ -44,7 +43,6 @@ public class CategoryService {
         return category;
     }
 
-//    @Transactional
     public CategoryOut update(long id, CategoryIn categoryIn) {
         getCategory(id);
         try {
@@ -54,12 +52,14 @@ public class CategoryService {
         }
     }
 
+    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public CategoryOut getCategory(long id) {
         return categoryRepository.findById(id)
                 .map(CategoryMapper::toCategoryOut)
                 .orElseThrow(() -> new NotFoundException("Категория с идентификатором " + id + " не найдена"));
     }
 
+    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<CategoryOut> gets(Pageable reqPage) {
         return categoryRepository.getAllLimitNoQueringMethod(reqPage).stream()
                 .map(CategoryMapper::toCategoryOut)

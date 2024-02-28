@@ -7,10 +7,12 @@ import ru.practicum.error.ConflictException;
 import ru.practicum.error.NotFoundException;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.message.*;
+import ru.practicum.model.request.RequestStatus;
 import ru.practicum.model.user.User;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,9 @@ public class MessageService {
 
     @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private final RequestRepository requestRepository;
 
     public MessageCreateOut add(MessageCreateIn message, long userId) {
 
@@ -39,7 +44,8 @@ public class MessageService {
         Message savedMessage = MessageMapper.toMessage(message, category, user);
         savedMessage.setState(MessageStatus.PENDING);
 
-        return MessageMapper.toMessageCreateOut(messageRepository.save(savedMessage));
+        return MessageMapper.toMessageCreateOut(messageRepository.save(savedMessage), 0);
+            //новые события не имеют запросов
     }
 
     public MessageCreateOut update(MessageUpdateIn message, long userId, long messageId) {
@@ -68,8 +74,13 @@ public class MessageService {
             oldMessage.setState(MessageStatus.PENDING);
         }
 
-        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
+        int confirmedRequest = requestRepository
+                .findAllByEvent_IdAndStatusIn(messageId, List.of(RequestStatus.CONFIRMED)).size();
+
+        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage), confirmedRequest);
     }
+
+
 
     public MessageCreateOut updateAdmin(MessageUpdateIn message, long messageId) {
 
@@ -100,7 +111,9 @@ public class MessageService {
                 oldMessage.setPublishedOn(LocalDateTime.now());
             }
         }
+        int confirmedRequest = requestRepository
+                .findAllByEvent_IdAndStatusIn(messageId, List.of(RequestStatus.CONFIRMED)).size();
 
-        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
+        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage), confirmedRequest);
     }
 }

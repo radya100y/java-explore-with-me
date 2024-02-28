@@ -28,7 +28,7 @@ public class MessageMapper {
                 .build();
     }
 
-    public static MessageCreateOut toMessageCreateOut(Message message) {
+    public static MessageCreateOut toMessageCreateOut(Message message, int confirmedReq) {
         return MessageCreateOut.builder()
                 .annotation(message.getAnnotation())
                 .category(CategoryMapper.toCategoryOut(message.getCategory()))
@@ -45,7 +45,7 @@ public class MessageMapper {
                 .state(message.getState())
                 .title(message.getTitle())
                 .views(1000)
-                .confirmedRequests(1000)
+                .confirmedRequests(confirmedReq)
                 .build();
     }
 }
