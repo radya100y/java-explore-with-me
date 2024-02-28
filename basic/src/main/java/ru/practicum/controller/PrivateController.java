@@ -30,7 +30,6 @@ public class PrivateController {
     @ResponseStatus(HttpStatus.CREATED)
     public MessageCreateOut saveEvent(@Valid @RequestBody MessageCreateIn messageCreateIn,
                                  @PathVariable("id") long userId) {
-        System.out.println(messageCreateIn);
         return messageService.add(messageCreateIn, userId);
     }
 

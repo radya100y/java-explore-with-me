@@ -1,6 +1,7 @@
 package ru.practicum.service.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RequestService {
 
     @Autowired
@@ -95,7 +97,8 @@ public class RequestService {
                 throw new ConflictException("Заявка " + request.getId() + " уже обработана");
 
             int i = requestRepository.findAllByEvent_IdAndStatusIn(eventId, List.of(RequestStatus.APPROVED)).size();
-            if (i < message.getParticipantLimit() || message.getParticipantLimit() == 0) {
+            if (requests.getStatus().equals(RequestStatus.CONFIRMED) &&
+                    (i < message.getParticipantLimit() || message.getParticipantLimit() == 0)) {
                 request.setStatus(RequestStatus.CONFIRMED);
                 requestRepository.save(request);
 
