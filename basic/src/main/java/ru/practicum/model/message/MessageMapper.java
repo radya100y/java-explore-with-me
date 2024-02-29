@@ -3,6 +3,7 @@ package ru.practicum.model.message;
 import lombok.experimental.UtilityClass;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.category.CategoryMapper;
+import ru.practicum.model.request.RequestStatus;
 import ru.practicum.model.user.User;
 import ru.practicum.model.user.UserMapper;
 
@@ -28,7 +29,7 @@ public class MessageMapper {
                 .build();
     }
 
-    public static MessageCreateOut toMessageCreateOut(Message message, int confirmedReq) {
+    public static MessageCreateOut toMessageCreateOut(Message message) {
         return MessageCreateOut.builder()
                 .annotation(message.getAnnotation())
                 .category(CategoryMapper.toCategoryOut(message.getCategory()))
@@ -45,7 +46,9 @@ public class MessageMapper {
                 .state(message.getState())
                 .title(message.getTitle())
                 .views(1000)
-                .confirmedRequests(confirmedReq)
+                .confirmedRequests((int) message.getRequests().stream()
+                        .filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED))
+                        .count())
                 .build();
     }
 
@@ -54,7 +57,9 @@ public class MessageMapper {
                 .eventDate(message.getEventDate())
                 .annotation(message.getAnnotation())
                 .category(CategoryMapper.toCategoryOut(message.getCategory()))
-                .confirmedRequests(message.getRequests().size())
+                .confirmedRequests((int) message.getRequests().stream()
+                        .filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED))
+                        .count())
                 .id(message.getId())
                 .initiator(UserMapper.toUserOutWithoutEmail(message.getInitiator()))
                 .paid(message.getPaid())

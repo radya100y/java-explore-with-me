@@ -75,4 +75,11 @@ public class PrivateController {
         Pageable reqPage = PageRequest.of(from / size, size);
         return messageService.getForInitiator(userId, reqPage);
     }
+
+    @GetMapping("/{userId}/events/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public MessageCreateOut getMessage(@PathVariable("userId") long userId,
+                                       @PathVariable("eventId") long eventId) {
+        return messageService.getMessage(userId, eventId);
+    }
 }

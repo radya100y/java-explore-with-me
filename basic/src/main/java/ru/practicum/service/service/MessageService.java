@@ -48,8 +48,7 @@ public class MessageService {
         Message savedMessage = MessageMapper.toMessage(message, category, user);
         savedMessage.setState(MessageStatus.PENDING);
 
-        return MessageMapper.toMessageCreateOut(messageRepository.save(savedMessage), 0);
-            //новые события не имеют запросов
+        return MessageMapper.toMessageCreateOut(messageRepository.save(savedMessage));
     }
 
     public MessageCreateOut update(MessageUpdateIn message, long userId, long messageId) {
@@ -78,10 +77,7 @@ public class MessageService {
             oldMessage.setState(MessageStatus.PENDING);
         }
 
-        int confirmedRequest = requestRepository
-                .findAllByEvent_IdAndStatusIn(messageId, List.of(RequestStatus.CONFIRMED)).size();
-
-        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage), confirmedRequest);
+        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
     }
 
     public MessageCreateOut updateAdmin(MessageUpdateIn message, long messageId) {
@@ -113,10 +109,8 @@ public class MessageService {
                 oldMessage.setPublishedOn(LocalDateTime.now());
             }
         }
-        int confirmedRequest = requestRepository
-                .findAllByEvent_IdAndStatusIn(messageId, List.of(RequestStatus.CONFIRMED)).size();
 
-        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage), confirmedRequest);
+        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
     }
 
     @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
@@ -127,5 +121,11 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
+    public MessageCreateOut getMessage(long userId, long messageId) {
+
+        return MessageMapper.toMessageCreateOut(messageRepository.findById(messageId).orElseThrow(() ->
+                new NotFoundException("Событие с идентификатором " + messageId + " не найдено")));
+    }
 
 }
