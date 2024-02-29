@@ -34,5 +34,5 @@ public class MessageCreateOut {
     private LocalDateTime publishedOn;
 
     private Integer views;
-    private Integer confirmedRequests;
+    private Long confirmedRequests;
 }

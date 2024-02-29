@@ -15,6 +15,7 @@ import ru.practicum.model.user.User;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -109,5 +110,11 @@ public class RequestService {
             }
         }
         return rco;
+    }
+
+    public List<RequestOut> getRequestsForRequester(long userId) {
+        return requestRepository.findAllByRequester_Id(userId).stream()
+                .map(RequestMapper::toRequestOut)
+                .collect(Collectors.toList());
     }
 }

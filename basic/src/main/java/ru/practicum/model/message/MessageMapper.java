@@ -3,16 +3,17 @@ package ru.practicum.model.message;
 import lombok.experimental.UtilityClass;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.category.CategoryMapper;
-import ru.practicum.model.request.RequestStatus;
+import ru.practicum.model.request.Request;
 import ru.practicum.model.user.User;
 import ru.practicum.model.user.UserMapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @UtilityClass
 public class MessageMapper {
 
-    public static Message toMessage(MessageCreateIn messageIn, Category category, User user) {
+    public static Message toMessage(MessageCreateIn messageIn, Category category, User user, List<Request> requests) {
         return Message.builder()
                 .annotation(messageIn.getAnnotation())
                 .category(category)
@@ -26,6 +27,7 @@ public class MessageMapper {
                 .title(messageIn.getTitle())
                 .initiator(user)
                 .createdOn(LocalDateTime.now())
+                .requests(requests)
                 .build();
     }
 
@@ -46,9 +48,7 @@ public class MessageMapper {
                 .state(message.getState())
                 .title(message.getTitle())
                 .views(1000)
-                .confirmedRequests((int) message.getRequests().stream()
-                        .filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED))
-                        .count())
+                .confirmedRequests(message.getConfirmedRequestQty())
                 .build();
     }
 
@@ -57,9 +57,7 @@ public class MessageMapper {
                 .eventDate(message.getEventDate())
                 .annotation(message.getAnnotation())
                 .category(CategoryMapper.toCategoryOut(message.getCategory()))
-                .confirmedRequests((int) message.getRequests().stream()
-                        .filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED))
-                        .count())
+                .confirmedRequests(message.getConfirmedRequestQty())
                 .id(message.getId())
                 .initiator(UserMapper.toUserOutWithoutEmail(message.getInitiator()))
                 .paid(message.getPaid())

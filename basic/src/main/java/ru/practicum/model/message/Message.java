@@ -6,11 +6,14 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.request.Request;
+import ru.practicum.model.request.RequestStatus;
 import ru.practicum.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "message", schema = "public")
@@ -70,6 +73,11 @@ public class Message {
     private MessageStatus state;
 
     @OneToMany(mappedBy = "event")
-    private List<Request> requests;
+//    @JoinColumn(name = "message_id")
+    private List<Request> requests = new ArrayList<>();
+
+    public long getConfirmedRequestQty() {
+        return requests.stream().filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED)).count();
+    }
 
 }

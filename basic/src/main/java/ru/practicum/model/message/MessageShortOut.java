@@ -16,7 +16,7 @@ public class MessageShortOut {
     private LocalDateTime eventDate;
     private String annotation;
     private CategoryOut category;
-    private Integer confirmedRequests;
+    private Long confirmedRequests;
     private Long id;
     private UserOutWithoutEmail initiator;
     private Boolean paid;

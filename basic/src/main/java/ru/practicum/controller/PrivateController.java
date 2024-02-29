@@ -76,10 +76,24 @@ public class PrivateController {
         return messageService.getForInitiator(userId, reqPage);
     }
 
+    @GetMapping("/{userId}/requests")
+    @ResponseStatus(HttpStatus.OK)
+    public List<RequestOut> getUserRequests(@PathVariable("userId") long userId) {
+        return requestService.getRequestsForRequester(userId);
+    }
+
     @GetMapping("/{userId}/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public MessageCreateOut getMessage(@PathVariable("userId") long userId,
                                        @PathVariable("eventId") long eventId) {
         return messageService.getMessage(userId, eventId);
     }
+
+    @GetMapping("/{userId}/events/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
+    public List<RequestOut> getRequestsForEvent(@PathVariable("userId") long userId,
+                                          @PathVariable("eventId") long eventId) {
+        return messageService.getRequestsForMessage(userId, eventId);
+    }
+
 }

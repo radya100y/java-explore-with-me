@@ -7,13 +7,16 @@ import ru.practicum.error.ConflictException;
 import ru.practicum.error.NotFoundException;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.message.*;
-import ru.practicum.model.request.RequestStatus;
+import ru.practicum.model.request.Request;
+import ru.practicum.model.request.RequestMapper;
+import ru.practicum.model.request.RequestOut;
 import ru.practicum.model.user.User;
 
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +48,7 @@ public class MessageService {
         if (message.getEventDate().isBefore(LocalDateTime.now().plus(2, ChronoUnit.HOURS)))
             throw new ConflictException("Некорректное время события");
 
-        Message savedMessage = MessageMapper.toMessage(message, category, user);
+        Message savedMessage = MessageMapper.toMessage(message, category, user, new ArrayList<>());
         savedMessage.setState(MessageStatus.PENDING);
 
         return MessageMapper.toMessageCreateOut(messageRepository.save(savedMessage));
@@ -126,6 +129,14 @@ public class MessageService {
 
         return MessageMapper.toMessageCreateOut(messageRepository.findById(messageId).orElseThrow(() ->
                 new NotFoundException("Событие с идентификатором " + messageId + " не найдено")));
+    }
+
+    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
+    public List<RequestOut> getRequestsForMessage(long userId, long messageId) {
+
+        return requestRepository.findAllByEvent_Id(messageId).stream()
+                .map(RequestMapper::toRequestOut)
+                .collect(Collectors.toList());
     }
 
 }
