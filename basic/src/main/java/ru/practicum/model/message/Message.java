@@ -5,10 +5,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.request.Request;
 import ru.practicum.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "message", schema = "public")
@@ -66,4 +68,8 @@ public class Message {
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private MessageStatus state;
+
+    @OneToMany(mappedBy = "event")
+    private List<Request> requests;
+
 }

@@ -2,10 +2,13 @@ package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.message.MessageCreateIn;
 import ru.practicum.model.message.MessageCreateOut;
+import ru.practicum.model.message.MessageShortOut;
 import ru.practicum.model.message.MessageUpdateIn;
 import ru.practicum.model.request.RequestConfirmIn;
 import ru.practicum.model.request.RequestConfirmOut;
@@ -14,6 +17,7 @@ import ru.practicum.service.service.MessageService;
 import ru.practicum.service.service.RequestService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -44,7 +48,7 @@ public class PrivateController {
     @PostMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.CREATED)
     public RequestOut saveRequest(@PathVariable("userId") long userId,
-                        @RequestParam(required = true) long eventId) {
+                                  @RequestParam long eventId) {
         return requestService.addRequest(userId, eventId);
     }
 
@@ -61,5 +65,14 @@ public class PrivateController {
                                              @PathVariable("eventId") long eventId,
                                              @Valid @RequestBody RequestConfirmIn requestConfirmIn) {
         return requestService.updateRequests(userId, eventId, requestConfirmIn);
+    }
+
+    @GetMapping("/{userId}/events")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MessageShortOut> getMessagesForOwner(@PathVariable("userId") long userId,
+                                                     @RequestParam(defaultValue = "0") int from,
+                                                     @RequestParam(defaultValue = "10") int size) {
+        Pageable reqPage = PageRequest.of(from / size, size);
+        return messageService.getForInitiator(userId, reqPage);
     }
 }

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+//@Transactional
 public class CategoryService {
 
     @Autowired

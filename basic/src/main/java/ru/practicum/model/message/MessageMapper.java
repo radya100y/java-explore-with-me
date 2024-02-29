@@ -48,5 +48,18 @@ public class MessageMapper {
                 .confirmedRequests(confirmedReq)
                 .build();
     }
+
+    public static MessageShortOut toMessageShortOut(Message message) {
+        return MessageShortOut.builder()
+                .eventDate(message.getEventDate())
+                .annotation(message.getAnnotation())
+                .category(CategoryMapper.toCategoryOut(message.getCategory()))
+                .confirmedRequests(message.getRequests().size())
+                .id(message.getId())
+                .initiator(UserMapper.toUserOutWithoutEmail(message.getInitiator()))
+                .paid(message.getPaid())
+                .title(message.getTitle())
+                .views(1000).build();
+    }
 }
 

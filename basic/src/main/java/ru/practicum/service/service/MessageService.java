@@ -10,12 +10,16 @@ import ru.practicum.model.message.*;
 import ru.practicum.model.request.RequestStatus;
 import ru.practicum.model.user.User;
 
+import javax.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MessageService {
 
     @Autowired
@@ -80,8 +84,6 @@ public class MessageService {
         return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage), confirmedRequest);
     }
 
-
-
     public MessageCreateOut updateAdmin(MessageUpdateIn message, long messageId) {
 
         Message oldMessage = messageRepository.findById(messageId)
@@ -116,4 +118,14 @@ public class MessageService {
 
         return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage), confirmedRequest);
     }
+
+    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
+    public List<MessageShortOut> getForInitiator(long userId, Pageable pageable) {
+
+        return messageRepository.findAllByInitiator_Id(userId, pageable).stream()
+                .map(MessageMapper::toMessageShortOut)
+                .collect(Collectors.toList());
+    }
+
+
 }
