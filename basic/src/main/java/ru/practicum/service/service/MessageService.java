@@ -7,7 +7,7 @@ import ru.practicum.error.ConflictException;
 import ru.practicum.error.NotFoundException;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.message.*;
-import ru.practicum.model.request.Request;
+import ru.practicum.model.message.QMessage;
 import ru.practicum.model.request.RequestMapper;
 import ru.practicum.model.request.RequestOut;
 import ru.practicum.model.user.User;
@@ -137,6 +137,29 @@ public class MessageService {
         return requestRepository.findAllByEvent_Id(messageId).stream()
                 .map(RequestMapper::toRequestOut)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
+    public MessageCreateOut getMessageForPublic(long messageId) {
+
+        MessageCreateOut returmedMessage = MessageMapper.toMessageCreateOut(
+                messageRepository.findById(messageId)
+                        .orElseThrow(() ->
+                                new NotFoundException("Событие с идентификатором " + messageId + " не найдено")));
+
+        if (!returmedMessage.getState().equals(MessageStatus.PUBLISHED))
+            throw new NotFoundException("Событие " + messageId + " не найдено");
+        return returmedMessage;
+    }
+
+    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
+    public List<MessageCreateOut> findAdminMessages(List<Long> userList, List<MessageStatus> statusList,
+                                                    List<String> categoryList, LocalDateTime rangeStart,
+                                                    LocalDateTime rangeEnd, Pageable pageable) {
+
+        QMessage message = QMessage.message;
+
+        return null;
     }
 
 }

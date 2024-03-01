@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.category.CategoryIn;
 import ru.practicum.model.category.CategoryOut;
 import ru.practicum.model.message.MessageCreateOut;
+import ru.practicum.model.message.MessageStatus;
 import ru.practicum.model.message.MessageUpdateIn;
 import ru.practicum.model.user.UserIn;
 import ru.practicum.model.user.UserOut;
@@ -18,6 +20,7 @@ import ru.practicum.service.service.MessageService;
 import ru.practicum.service.service.UserService;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,4 +93,36 @@ public class AdminController {
                                    @PathVariable("eventId") long eventId) {
         return messageService.updateAdmin(messageUpdateIn, eventId);
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<MessageCreateOut> getAdminMessages(
+            @RequestParam(required = false) String users,
+            @RequestParam(required = false) String states,
+            @RequestParam(required = false) String categories,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Long> userList = new ArrayList<>();
+        if (users != null) userList.addAll(Arrays.stream(users.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList()));
+
+        List<MessageStatus> statusList = new ArrayList<>();
+        if (states != null) statusList.addAll(Arrays.stream(states.split(","))
+                .map(MessageStatus::valueOf)
+                .collect(Collectors.toList()));
+
+        List<String> categoryList = new ArrayList<>();
+        if (categories != null) categoryList.addAll(Arrays.stream(categories.split(","))
+                .collect(Collectors.toList()));
+
+        Pageable reqPage = PageRequest.of(from / size, size);
+
+        return messageService.findAdminMessages(userList, statusList, categoryList, rangeStart, rangeEnd, reqPage);
+    }
+
+
 }

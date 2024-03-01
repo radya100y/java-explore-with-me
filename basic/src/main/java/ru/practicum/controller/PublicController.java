@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.category.CategoryOut;
+import ru.practicum.model.message.MessageCreateOut;
 import ru.practicum.service.service.CategoryService;
+import ru.practicum.service.service.MessageService;
 
 import java.util.List;
 
@@ -18,6 +20,9 @@ public class PublicController {
 
     @Autowired
     private final CategoryService categoryService;
+
+    @Autowired
+    private final MessageService messageService;
 
     @GetMapping("/categories")
     public List<CategoryOut> gets(@RequestParam(defaultValue = "0") int from,
@@ -30,5 +35,10 @@ public class PublicController {
     @GetMapping("categories/{id}")
     public CategoryOut get(@PathVariable("id") long catId) {
         return categoryService.getCategory(catId);
+    }
+
+    @GetMapping("events/{eventId}")
+    public MessageCreateOut getMessage(@PathVariable("eventId") long messageId) {
+        return messageService.getMessageForPublic(messageId);
     }
 }
