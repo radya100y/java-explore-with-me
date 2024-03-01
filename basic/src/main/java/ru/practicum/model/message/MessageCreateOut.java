@@ -2,6 +2,7 @@ package ru.practicum.model.message;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.model.category.CategoryOut;
 import ru.practicum.model.user.UserOutWithoutEmail;
@@ -9,6 +10,7 @@ import ru.practicum.model.user.UserOutWithoutEmail;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @SuperBuilder
 public class MessageCreateOut {
 

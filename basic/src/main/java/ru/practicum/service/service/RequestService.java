@@ -31,7 +31,7 @@ public class RequestService {
     @Autowired
     private final MessageRepository messageRepository;
 
-    @Transactional
+//    @Transactional
     public RequestOut addRequest(long userId, long eventId) {
 
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -49,7 +49,7 @@ public class RequestService {
             throw new ConflictException("Нельзя подать несколько заявок");
         if (!message.getState().equals(MessageStatus.PUBLISHED))
             throw new ConflictException("Нельзя оставить заявку на неопубликованное событие");
-        if (requests.size() >= message.getParticipantLimit())
+        if ((requests.size() >= message.getParticipantLimit()) && (message.getParticipantLimit() > 0))
             throw new ConflictException("Лимит участников события превышен");
 
         Request request = Request.builder()

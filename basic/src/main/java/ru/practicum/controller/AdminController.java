@@ -1,6 +1,7 @@
 package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "/admin")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminController {
 
     @Autowired
@@ -94,16 +96,18 @@ public class AdminController {
         return messageService.updateAdmin(messageUpdateIn, eventId);
     }
 
-    @GetMapping
+    @GetMapping("/events")
     @ResponseStatus(HttpStatus.OK)
     public List<MessageCreateOut> getAdminMessages(
             @RequestParam(required = false) String users,
             @RequestParam(required = false) String states,
             @RequestParam(required = false) String categories,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "10") int size) {
+
+        log.warn("User -> {} States -> {} Categories -> {} PB -> {} PE -> {} FROM -> {} SIZE -> {}", users, states, categories, rangeStart, rangeEnd, from, size);
 
         List<Long> userList = new ArrayList<>();
         if (users != null) userList.addAll(Arrays.stream(users.split(","))
@@ -115,13 +119,12 @@ public class AdminController {
                 .map(MessageStatus::valueOf)
                 .collect(Collectors.toList()));
 
-        List<String> categoryList = new ArrayList<>();
+        List<Long> categoryList = new ArrayList<>();
         if (categories != null) categoryList.addAll(Arrays.stream(categories.split(","))
+                .map(Long::parseLong)
                 .collect(Collectors.toList()));
 
-        Pageable reqPage = PageRequest.of(from / size, size);
-
-        return messageService.findAdminMessages(userList, statusList, categoryList, rangeStart, rangeEnd, reqPage);
+        return messageService.findAdminMessages(userList, statusList, categoryList, rangeStart, rangeEnd, from, size);
     }
 
 

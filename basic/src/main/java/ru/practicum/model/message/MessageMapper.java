@@ -8,12 +8,12 @@ import ru.practicum.model.user.User;
 import ru.practicum.model.user.UserMapper;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @UtilityClass
 public class MessageMapper {
 
-    public static Message toMessage(MessageCreateIn messageIn, Category category, User user, List<Request> requests) {
+    public static Message toMessage(MessageCreateIn messageIn, Category category, User user, Set<Request> requests) {
         return Message.builder()
                 .annotation(messageIn.getAnnotation())
                 .category(category)

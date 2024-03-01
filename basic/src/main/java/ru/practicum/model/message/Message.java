@@ -11,9 +11,8 @@ import ru.practicum.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "message", schema = "public")
@@ -72,9 +71,9 @@ public class Message {
     @Enumerated(EnumType.STRING)
     private MessageStatus state;
 
-    @OneToMany(mappedBy = "event")
-//    @JoinColumn(name = "message_id")
-    private List<Request> requests = new ArrayList<>();
+    @OneToMany//(mappedBy = "event")
+    @JoinColumn(name = "message_id")
+    private Set<Request> requests = new HashSet<>();
 
     public long getConfirmedRequestQty() {
         return requests.stream().filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED)).count();

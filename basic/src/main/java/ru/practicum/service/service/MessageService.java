@@ -1,5 +1,8 @@
 package ru.practicum.service.service;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,11 +15,14 @@ import ru.practicum.model.request.RequestMapper;
 import ru.practicum.model.request.RequestOut;
 import ru.practicum.model.user.User;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +43,9 @@ public class MessageService {
     @Autowired
     private final RequestRepository requestRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     public MessageCreateOut add(MessageCreateIn message, long userId) {
 
         Category category = categoryRepository.findById(message.getCategory()).orElseThrow(() ->
@@ -48,7 +57,7 @@ public class MessageService {
         if (message.getEventDate().isBefore(LocalDateTime.now().plus(2, ChronoUnit.HOURS)))
             throw new ConflictException("Некорректное время события");
 
-        Message savedMessage = MessageMapper.toMessage(message, category, user, new ArrayList<>());
+        Message savedMessage = MessageMapper.toMessage(message, category, user, new HashSet<>());
         savedMessage.setState(MessageStatus.PENDING);
 
         return MessageMapper.toMessageCreateOut(messageRepository.save(savedMessage));
@@ -154,12 +163,45 @@ public class MessageService {
 
     @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<MessageCreateOut> findAdminMessages(List<Long> userList, List<MessageStatus> statusList,
-                                                    List<String> categoryList, LocalDateTime rangeStart,
-                                                    LocalDateTime rangeEnd, Pageable pageable) {
+                                                    List<Long> categoryList, LocalDateTime rangeStart,
+                                                    LocalDateTime rangeEnd, int from, int size) {
 
         QMessage message = QMessage.message;
 
-        return null;
+        BooleanExpression whereUser = userList.size() == 0 ?
+                Expressions.asBoolean(true).isTrue() :
+                message.initiator.id.in(userList);
+
+        BooleanExpression whereStatus = statusList.size() == 0 ?
+                Expressions.asBoolean(true).isTrue() :
+                message.state.in(statusList);
+
+        BooleanExpression whereCategory = categoryList.size() == 0 ?
+                Expressions.asBoolean(true).isTrue() :
+                message.category.id.in(categoryList);
+
+        BooleanExpression whereStart = rangeStart == null ?
+                Expressions.asBoolean(true).isTrue() :
+                message.eventDate.after(rangeStart);
+
+        BooleanExpression whereEnd = rangeEnd == null ?
+                Expressions.asBoolean(true).isTrue() :
+                message.eventDate.before(rangeEnd);
+
+        BooleanExpression whereCombo = whereUser.and(whereStatus).and(whereCategory).and(whereStart).and(whereEnd);
+
+        List<Message> messages = new JPAQueryFactory(entityManager)
+                .selectFrom(message)
+                .from(message)
+                .where(whereCombo)
+                .limit(size)
+                .offset(from)
+                .fetch();
+
+
+        return messages.stream()
+                .map(MessageMapper::toMessageCreateOut)
+                .collect(Collectors.toList());
     }
 
 }
