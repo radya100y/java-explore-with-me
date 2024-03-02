@@ -2,12 +2,14 @@ package ru.practicum.model.message;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @ToString
 public class MessageCreateIn {
 
@@ -28,14 +30,11 @@ public class MessageCreateIn {
 
     private Location location;
 
-    @NotNull(message = "поле paid должно быть заполнено")
     private Boolean paid;
 
-    @NotNull(message = "поле participantLimit должно быть заполнено")
-    @Positive(message = "поле participantLimit должно быть больше 0")
+//    @Positive(message = "поле participantLimit должно быть больше 0")
     private Integer participantLimit;
 
-    @NotNull(message = "поле requestModeration должно быть заполнено")
     private Boolean requestModeration;
 
     @Size(max = 120, min = 3, message = "поле title должно содержать между 3 и 120 символов")

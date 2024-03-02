@@ -107,7 +107,8 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.warn("User -> {} States -> {} Categories -> {} PB -> {} PE -> {} FROM -> {} SIZE -> {}", users, states, categories, rangeStart, rangeEnd, from, size);
+        log.warn("User -> {} States -> {} Categories -> {} PB -> {} PE -> {} FROM -> {} SIZE -> {}", users,
+                states, categories, rangeStart, rangeEnd, from, size);
 
         List<Long> userList = new ArrayList<>();
         if (users != null) userList.addAll(Arrays.stream(users.split(","))

@@ -27,6 +27,17 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final BadRequestException exc) {
+        log.debug("Получен статус 400 Bad request {}", exc.getMessage(), exc);
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                exc.getLocalizedMessage(),
+                exc.getMessage(),
+                LocalDateTime.now());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final NotFoundException exc) { // Element not found
         log.debug("Получен статус 404 Not found {}", exc.getMessage(), exc);

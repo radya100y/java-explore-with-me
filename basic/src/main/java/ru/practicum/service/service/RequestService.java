@@ -56,7 +56,9 @@ public class RequestService {
                 .event(message)
                 .requester(user)
                 .createdOn(LocalDateTime.now())
-                .status(message.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.APPROVED)
+                .status(!message.getRequestModeration() || message.getParticipantLimit() == 0 ?
+                        RequestStatus.CONFIRMED :
+                        RequestStatus.PENDING)
                 .build();
         try {
             return RequestMapper.toRequestOut(requestRepository.save(request));

@@ -1,6 +1,7 @@
 package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
+@Slf4j
 public class PrivateController {
 
     @Autowired
@@ -30,10 +32,17 @@ public class PrivateController {
     @Autowired
     private final RequestService requestService;
 
-    @PostMapping("/{id}/events")
+    @PostMapping("/{userId}/events")
     @ResponseStatus(HttpStatus.CREATED)
     public MessageCreateOut saveEvent(@Valid @RequestBody MessageCreateIn messageCreateIn,
-                                 @PathVariable("id") long userId) {
+                                      @PathVariable("userId") long userId) {
+
+        if (messageCreateIn.getPaid() == null) messageCreateIn.setPaid(false);
+        if (messageCreateIn.getParticipantLimit() == null) messageCreateIn.setParticipantLimit(0);
+        if (messageCreateIn.getRequestModeration() == null) messageCreateIn.setRequestModeration(true);
+
+        log.warn(messageCreateIn.toString());
+
         return messageService.add(messageCreateIn, userId);
     }
 
@@ -49,6 +58,7 @@ public class PrivateController {
     @ResponseStatus(HttpStatus.CREATED)
     public RequestOut saveRequest(@PathVariable("userId") long userId,
                                   @RequestParam long eventId) {
+
         return requestService.addRequest(userId, eventId);
     }
 

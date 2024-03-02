@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.error.ConflictException;
-import ru.practicum.model.user.User;
 import ru.practicum.model.user.UserIn;
 import ru.practicum.model.user.UserMapper;
 import ru.practicum.model.user.UserOut;
@@ -35,6 +34,7 @@ public class UserService {
             throw new ConflictException("Пользователь с адресом " + user.getEmail() + " уже существует");
         }
     }
+
     public UserOut add(UserIn userIn) {
         try {
             return UserMapper.toUserOut(userRepository.save(UserMapper.toUser(userIn)));

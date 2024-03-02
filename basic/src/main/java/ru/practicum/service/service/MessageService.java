@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.error.ConflictException;
@@ -28,7 +29,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+//@Transactional
+@Slf4j
 public class MessageService {
 
     @Autowired
@@ -94,6 +96,8 @@ public class MessageService {
 
     public MessageCreateOut updateAdmin(MessageUpdateIn message, long messageId) {
 
+        log.warn(message.toString());
+
         Message oldMessage = messageRepository.findById(messageId)
                 .orElseThrow(() -> new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
 
@@ -112,13 +116,16 @@ public class MessageService {
         if (message.getRequestModeration() != null) oldMessage.setRequestModeration(message.getRequestModeration());
         if (message.getTitle() != null) oldMessage.setTitle(message.getTitle());
 
-        switch (message.getStateAction()) {
-            case REJECT_EVENT: {
-                oldMessage.setState(MessageStatus.CANCELED);
-                break;
-            } case PUBLISH_EVENT: {
-                oldMessage.setState(MessageStatus.PUBLISHED);
-                oldMessage.setPublishedOn(LocalDateTime.now());
+        if (message.getStateAction() != null) {
+            switch (message.getStateAction()) {
+                case REJECT_EVENT: {
+                    oldMessage.setState(MessageStatus.CANCELED);
+                    break;
+                }
+                case PUBLISH_EVENT: {
+                    oldMessage.setState(MessageStatus.PUBLISHED);
+                    oldMessage.setPublishedOn(LocalDateTime.now());
+                }
             }
         }
 
@@ -201,6 +208,42 @@ public class MessageService {
 
         return messages.stream()
                 .map(MessageMapper::toMessageCreateOut)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
+    public List<MessageShortOut> findPublicMessages(String text, List<Long> categoryList, Boolean paid,
+                                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                    Boolean onlyAvailable, String sort, int from, int size)  {
+
+        QMessage message = QMessage.message;
+
+        BooleanExpression whereExpression = text == null ? Expressions.asBoolean(true).isTrue() :
+                message.annotation.containsIgnoreCase(text).or(message.description.containsIgnoreCase(text));
+        if (categoryList.size() > 0) whereExpression.and(message.category.id.in(categoryList));
+        if (paid != null) whereExpression.and(message.paid.eq(paid));
+        if (rangeStart == null) {
+            whereExpression.and(message.eventDate.after(LocalDateTime.now()));
+        } else {
+            whereExpression.and(message.eventDate.after(rangeStart));
+            if (rangeEnd != null) whereExpression.and(message.eventDate.before(rangeEnd));
+        }
+        if (onlyAvailable != null) {
+            if (onlyAvailable) whereExpression.and(message.participantLimit.lt(message.requests.size())
+                    .or(message.participantLimit.eq(0)));
+        }
+
+        List<Message> messages = new JPAQueryFactory(entityManager)
+                .selectFrom(message)
+                .from(message)
+                .where(whereExpression)
+                .orderBy(sort == null || sort.equals("EVENT_DATE") ? message.eventDate.desc() : message.eventDate.asc())
+                .limit(size)
+                .offset(from)
+                .fetch();
+
+        return messages.stream()
+                .map(MessageMapper::toMessageShortOut)
                 .collect(Collectors.toList());
     }
 
