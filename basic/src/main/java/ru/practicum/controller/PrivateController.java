@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.error.BadRequestException;
 import ru.practicum.model.message.MessageCreateIn;
 import ru.practicum.model.message.MessageCreateOut;
 import ru.practicum.model.message.MessageShortOut;
@@ -39,9 +40,11 @@ public class PrivateController {
 
         if (messageCreateIn.getPaid() == null) messageCreateIn.setPaid(false);
         if (messageCreateIn.getParticipantLimit() == null) messageCreateIn.setParticipantLimit(0);
+        if (messageCreateIn.getParticipantLimit() < 0) throw new BadRequestException("У события " + messageCreateIn +
+                " некорректно указано кол-во участников");
         if (messageCreateIn.getRequestModeration() == null) messageCreateIn.setRequestModeration(true);
 
-        log.warn(messageCreateIn.toString());
+//        log.warn(messageCreateIn.toString());
 
         return messageService.add(messageCreateIn, userId);
     }
@@ -51,6 +54,8 @@ public class PrivateController {
     public MessageCreateOut updateEvent(@Valid @RequestBody MessageUpdateIn messageUpdateIn,
                                    @PathVariable("userId") long userId,
                                    @PathVariable("eventId") long eventId) {
+
+//        log.warn(messageUpdateIn.toString());
         return messageService.update(messageUpdateIn, userId, eventId);
     }
 

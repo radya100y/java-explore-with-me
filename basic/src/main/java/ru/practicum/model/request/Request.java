@@ -3,6 +3,7 @@ package ru.practicum.model.request;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.model.message.Message;
 import ru.practicum.model.user.User;

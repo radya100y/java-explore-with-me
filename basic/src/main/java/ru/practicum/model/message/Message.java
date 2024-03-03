@@ -3,6 +3,7 @@ package ru.practicum.model.message;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.request.Request;
@@ -20,6 +21,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
+@ToString
 public class Message {
 
     @Id

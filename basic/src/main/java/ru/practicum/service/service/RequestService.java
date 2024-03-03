@@ -42,13 +42,15 @@ public class RequestService {
 
         List<Request> requests = requestRepository.findAllByEvent_IdAndStatusIn(
                 eventId,
-                List.of(RequestStatus.APPROVED, RequestStatus.PENDING)
+                List.of(RequestStatus.APPROVED, RequestStatus.PENDING, RequestStatus.CONFIRMED)
         );
 
         if (message.getInitiator().getId() == userId)
             throw new ConflictException("Нельзя подать несколько заявок");
         if (!message.getState().equals(MessageStatus.PUBLISHED))
             throw new ConflictException("Нельзя оставить заявку на неопубликованное событие");
+
+//        log.info(message.toString() + " =========> " + message.getRequests().size());
         if ((requests.size() >= message.getParticipantLimit()) && (message.getParticipantLimit() > 0))
             throw new ConflictException("Лимит участников события превышен");
 

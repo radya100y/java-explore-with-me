@@ -85,10 +85,13 @@ public class MessageService {
         if (message.getRequestModeration() != null) oldMessage.setRequestModeration(message.getRequestModeration());
         if (message.getTitle() != null) oldMessage.setTitle(message.getTitle());
 
-        if (message.getStateAction().equals(MessageStateAction.CANCEL_REVIEW)) {
-            oldMessage.setState(MessageStatus.CANCELED);
-        } else if (message.getStateAction().equals(MessageStateAction.SEND_TO_REVIEW)) {
-            oldMessage.setState(MessageStatus.PENDING);
+        if (message.getStateAction() != null) {
+
+            if (message.getStateAction().equals(MessageStateAction.CANCEL_REVIEW)) {
+                oldMessage.setState(MessageStatus.CANCELED);
+            } else if (message.getStateAction().equals(MessageStateAction.SEND_TO_REVIEW)) {
+                oldMessage.setState(MessageStatus.PENDING);
+            }
         }
 
         return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
