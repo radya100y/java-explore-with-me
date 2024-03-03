@@ -24,4 +24,10 @@ public class CollectionMessage {
     @ManyToOne
     @JoinColumn(name = "collection_id")
     private Collection collection;
+
+
+    public CollectionMessage(Message message, Collection collection) {
+        this.message = message;
+        this.collection = collection;
+    }
 }

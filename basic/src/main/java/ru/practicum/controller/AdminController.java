@@ -11,12 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.category.CategoryIn;
 import ru.practicum.model.category.CategoryOut;
+import ru.practicum.model.collection.CollectionCreateIn;
+import ru.practicum.model.collection.CollectionCreateOut;
 import ru.practicum.model.message.MessageCreateOut;
 import ru.practicum.model.message.MessageStatus;
 import ru.practicum.model.message.MessageUpdateIn;
 import ru.practicum.model.user.UserIn;
 import ru.practicum.model.user.UserOut;
 import ru.practicum.service.service.CategoryService;
+import ru.practicum.service.service.CollectionService;
 import ru.practicum.service.service.MessageService;
 import ru.practicum.service.service.UserService;
 
@@ -41,6 +44,9 @@ public class AdminController {
 
     @Autowired
     private final MessageService messageService;
+
+    @Autowired
+    private final CollectionService collectionService;
 
 
     @PostMapping("/users")
@@ -126,6 +132,15 @@ public class AdminController {
                 .collect(Collectors.toList()));
 
         return messageService.findAdminMessages(userList, statusList, categoryList, rangeStart, rangeEnd, from, size);
+    }
+
+    @PostMapping("/compilations")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CollectionCreateOut addNewCollection(@Valid @RequestBody CollectionCreateIn collectionCreateIn) {
+
+        log.info(collectionCreateIn.toString());
+        if (collectionCreateIn.getPinned() == null) collectionCreateIn.setPinned(false);
+        return collectionService.add(collectionCreateIn);
     }
 
 
