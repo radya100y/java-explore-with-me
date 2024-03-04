@@ -84,4 +84,13 @@ public class PublicController {
     public CollectionCreateOut getCollection(@PathVariable("compId") long collectionId) {
         return collectionService.getCollectionOut(collectionId);
     }
+
+    @GetMapping("/compilations")
+    public List<CollectionCreateOut> getCollections(@RequestParam(defaultValue = "0") int from,
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(required = false) Boolean pinned) {
+
+        Pageable pageable = PageRequest.of(from / size, size);
+        return collectionService.getCollections(pinned, pageable);
+    }
 }
