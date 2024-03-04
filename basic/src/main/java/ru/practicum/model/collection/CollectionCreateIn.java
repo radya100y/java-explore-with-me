@@ -17,7 +17,7 @@ public class CollectionCreateIn {
 
     private Boolean pinned;
 
+    @Size(max = 50)
     @NotBlank
-    @Size(max = 512)
     private String title;
 }

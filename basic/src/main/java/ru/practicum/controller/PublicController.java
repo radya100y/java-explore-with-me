@@ -6,12 +6,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.error.BadRequestException;
 import ru.practicum.model.category.CategoryOut;
+import ru.practicum.model.collection.CollectionCreateOut;
 import ru.practicum.model.message.MessageCreateOut;
 import ru.practicum.model.message.MessageShortOut;
 import ru.practicum.service.service.CategoryService;
+import ru.practicum.service.service.CollectionService;
 import ru.practicum.service.service.MessageService;
 
 import java.time.LocalDateTime;
@@ -30,6 +33,9 @@ public class PublicController {
 
     @Autowired
     private final MessageService messageService;
+
+    @Autowired
+    private final CollectionService collectionService;
 
     @GetMapping("/categories")
     public List<CategoryOut> gets(@RequestParam(defaultValue = "0") int from,
@@ -71,5 +77,11 @@ public class PublicController {
 
         return messageService.findPublicMessages(text, categoryList, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size);
+    }
+
+    @GetMapping("/compilations/{compId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionCreateOut getCollection(@PathVariable("compId") long collectionId) {
+        return collectionService.getCollectionOut(collectionId);
     }
 }

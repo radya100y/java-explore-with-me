@@ -113,9 +113,6 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.warn("User -> {} States -> {} Categories -> {} PB -> {} PE -> {} FROM -> {} SIZE -> {}", users,
-                states, categories, rangeStart, rangeEnd, from, size);
-
         List<Long> userList = new ArrayList<>();
         if (users != null) userList.addAll(Arrays.stream(users.split(","))
                 .map(Long::parseLong)
@@ -138,9 +135,21 @@ public class AdminController {
     @ResponseStatus(HttpStatus.CREATED)
     public CollectionCreateOut addNewCollection(@Valid @RequestBody CollectionCreateIn collectionCreateIn) {
 
-        log.info(collectionCreateIn.toString());
         if (collectionCreateIn.getPinned() == null) collectionCreateIn.setPinned(false);
         return collectionService.add(collectionCreateIn);
+    }
+
+    @DeleteMapping("/compilations/{compId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCollection(@PathVariable("compId") long collectionId) {
+        collectionService.delete(collectionId);
+    }
+
+    @PatchMapping("/compilations/{compId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionCreateOut updateCollection(@PathVariable("compId") long collectionId,
+                                                @RequestBody CollectionCreateIn collectionCreateIn) {
+        return collectionService.update(collectionId, collectionCreateIn);
     }
 
 

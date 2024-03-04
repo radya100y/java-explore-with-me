@@ -2,6 +2,7 @@ package ru.practicum.model.collection;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.model.message.Message;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "collection_message", schema = "public")
 @Getter
 @Setter
+@NoArgsConstructor
 public class CollectionMessage {
 
     @Id
