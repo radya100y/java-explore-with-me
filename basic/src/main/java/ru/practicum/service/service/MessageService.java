@@ -99,8 +99,6 @@ public class MessageService {
 
     public MessageCreateOut updateAdmin(MessageUpdateIn message, long messageId) {
 
-        log.warn(message.toString());
-
         Message oldMessage = messageRepository.findById(messageId)
                 .orElseThrow(() -> new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
 
