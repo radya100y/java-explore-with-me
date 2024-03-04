@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.client.StatClient;
 import ru.practicum.error.ConflictException;
 import ru.practicum.error.NotFoundException;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.hit.HitIn;
 import ru.practicum.model.message.*;
 import ru.practicum.model.message.QMessage;
 import ru.practicum.model.request.RequestMapper;
@@ -18,6 +20,7 @@ import ru.practicum.model.user.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 
@@ -44,6 +47,9 @@ public class MessageService {
 
     @Autowired
     private final RequestRepository requestRepository;
+
+    @Autowired
+    private final StatClient statClient;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -157,7 +163,7 @@ public class MessageService {
     }
 
     @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
-    public MessageCreateOut getMessageForPublic(long messageId) {
+    public MessageCreateOut getMessageForPublic(long messageId, HttpServletRequest request) {
 
         MessageCreateOut returmedMessage = MessageMapper.toMessageCreateOut(
                 messageRepository.findById(messageId)
@@ -166,6 +172,8 @@ public class MessageService {
 
         if (!returmedMessage.getState().equals(MessageStatus.PUBLISHED))
             throw new NotFoundException("Событие " + messageId + " не найдено");
+
+        statClient.addHit(new HitIn("подробная информация", request.getRequestURI(), request.getRemoteAddr()));
         return returmedMessage;
     }
 
@@ -215,7 +223,8 @@ public class MessageService {
     @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<MessageShortOut> findPublicMessages(String text, List<Long> categoryList, Boolean paid,
                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                                    Boolean onlyAvailable, String sort, int from, int size)  {
+                                                    Boolean onlyAvailable, String sort, int from, int size,
+                                                    HttpServletRequest request)  {
 
         QMessage message = QMessage.message;
 
@@ -242,6 +251,8 @@ public class MessageService {
                 .limit(size)
                 .offset(from)
                 .fetch();
+
+        statClient.addHit(new HitIn("общая информация", request.getRequestURI(), request.getRemoteAddr()));
 
         return messages.stream()
                 .map(MessageMapper::toMessageShortOut)

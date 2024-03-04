@@ -17,6 +17,7 @@ import ru.practicum.service.service.CategoryService;
 import ru.practicum.service.service.CollectionService;
 import ru.practicum.service.service.MessageService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,8 +52,8 @@ public class PublicController {
     }
 
     @GetMapping("events/{eventId}")
-    public MessageCreateOut getMessage(@PathVariable("eventId") long messageId) {
-        return messageService.getMessageForPublic(messageId);
+    public MessageCreateOut getMessage(@PathVariable("eventId") long messageId, HttpServletRequest request) {
+        return messageService.getMessageForPublic(messageId, request);
     }
 
     @GetMapping("/events")
@@ -65,7 +66,8 @@ public class PublicController {
             @RequestParam(required = false) Boolean onlyAvailable,
             @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "0") int from,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
 
         List<Long> categoryList = new ArrayList<>();
         if (categories != null) categoryList.addAll(Arrays.stream(categories.split(","))
@@ -76,7 +78,7 @@ public class PublicController {
             throw new BadRequestException("Неапваильно указаны даты начала и окончания события");
 
         return messageService.findPublicMessages(text, categoryList, paid, rangeStart, rangeEnd,
-                onlyAvailable, sort, from, size);
+                onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("/compilations/{compId}")

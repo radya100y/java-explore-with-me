@@ -55,7 +55,6 @@ public class PrivateController {
                                    @PathVariable("userId") long userId,
                                    @PathVariable("eventId") long eventId) {
 
-//        log.warn(messageUpdateIn.toString());
         return messageService.update(messageUpdateIn, userId, eventId);
     }
 
