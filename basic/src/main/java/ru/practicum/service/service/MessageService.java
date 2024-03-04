@@ -173,7 +173,7 @@ public class MessageService {
         if (!returmedMessage.getState().equals(MessageStatus.PUBLISHED))
             throw new NotFoundException("Событие " + messageId + " не найдено");
 
-        statClient.addHit(new HitIn("подробная информация", request.getRequestURI(), request.getRemoteAddr()));
+        addHit("подробная информация", request, messageId); //добавляем событие
         return returmedMessage;
     }
 
@@ -252,11 +252,26 @@ public class MessageService {
                 .offset(from)
                 .fetch();
 
-        statClient.addHit(new HitIn("общая информация", request.getRequestURI(), request.getRemoteAddr()));
+        addHit("общая информация", request, null); //добавляем событие
 
         return messages.stream()
                 .map(MessageMapper::toMessageShortOut)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    private void addHit(String app, HttpServletRequest request, Long messageId) {
+
+        if (messageId != null) {
+            Message message = messageRepository.findById(messageId).orElseThrow(() ->
+                    new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
+            message.addView();
+            messageRepository.save(message);
+        }
+
+        HitIn hit = new HitIn(app, request.getRequestURI(), request.getRemoteAddr());
+        statClient.addHit(hit);
+
     }
 
 }

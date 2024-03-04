@@ -77,8 +77,15 @@ public class Message {
     @JoinColumn(name = "message_id")
     private Set<Request> requests = new HashSet<>();
 
+    @Column(name = "views")
+    private Long views;
+
     public long getConfirmedRequestQty() {
         return requests.stream().filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED)).count();
+    }
+
+    public void addView() {
+        this.views++;
     }
 
 }

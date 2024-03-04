@@ -21,5 +21,5 @@ public class MessageShortOut {
     private UserOutWithoutEmail initiator;
     private Boolean paid;
     private String title;
-    private Integer views;
+    private Long views;
 }

@@ -38,6 +38,7 @@ create table if not exists public.message
     , published_on /*publishedOn*/ timestamp without time zone
     , initiator bigint references users(id) on delete cascade
     , state message_status not null default 'PENDING'
+    , views bigint default 0
 );
 
 create type if not exists request_status as enum('PENDING', 'APPROVED', 'REJECTED', 'CANCELED', 'CONFIRMED');

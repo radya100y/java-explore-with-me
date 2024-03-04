@@ -35,6 +35,6 @@ public class MessageCreateOut {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime publishedOn;
 
-    private Integer views;
+    private Long views;
     private Long confirmedRequests;
 }

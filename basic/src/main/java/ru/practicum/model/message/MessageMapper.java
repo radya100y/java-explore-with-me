@@ -28,6 +28,7 @@ public class MessageMapper {
                 .initiator(user)
                 .createdOn(LocalDateTime.now())
                 .requests(requests)
+                .views(0L)
                 .build();
     }
 
@@ -47,7 +48,7 @@ public class MessageMapper {
                 .requestModeration(message.getRequestModeration())
                 .state(message.getState())
                 .title(message.getTitle())
-                .views(1000)
+                .views(message.getViews())
                 .confirmedRequests(message.getConfirmedRequestQty())
                 .build();
     }
@@ -62,7 +63,7 @@ public class MessageMapper {
                 .initiator(UserMapper.toUserOutWithoutEmail(message.getInitiator()))
                 .paid(message.getPaid())
                 .title(message.getTitle())
-                .views(1000).build();
+                .views(message.getViews()).build();
     }
 }
 
