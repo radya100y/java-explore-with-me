@@ -42,4 +42,10 @@ public class StatController {
 
         return eventService.getEvents(start, end, urisList, unique);
     }
+
+    @PostMapping(path = "/hit/add")
+    public EventsOut saveAndGetStat(@Valid @RequestBody EventIn eventIn) {
+        return eventService.saveAndGetStat(eventIn);
+    }
+
 }

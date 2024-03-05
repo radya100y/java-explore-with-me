@@ -35,6 +35,17 @@ public class EventService {
         return EventMapper.toEventOut(eventRepository.save(EventMapper.toEvent(eventIn)));
     }
 
+    public EventsOut saveAndGetStat(EventIn eventIn) {
+
+        Event event = eventRepository.save(EventMapper.toEvent(eventIn));
+        Long views = eventRepository.findAllByAppAndUri(eventIn.getApp(), eventIn.getUri()).stream()
+                .map(Event::getIp)
+                .distinct()
+                .count();
+
+        return new EventsOut(eventIn.getApp(), eventIn.getUri(), views);
+    }
+
     public EventOut getById(long id) {
         return EventMapper.toEventOut(eventRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Событие с идентификатором " + id + " не найдено")));
@@ -65,4 +76,5 @@ public class EventService {
                         Long.parseLong(x.toArray()[2].toString())))
                 .collect(Collectors.toList());
     }
+
 }

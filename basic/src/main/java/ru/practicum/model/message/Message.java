@@ -84,8 +84,4 @@ public class Message {
         return requests.stream().filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED)).count();
     }
 
-    public void addView() {
-        this.views++;
-    }
-
 }

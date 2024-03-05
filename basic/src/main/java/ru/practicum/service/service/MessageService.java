@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.client.StatClient;
+import ru.practicum.client.StatService;
 import ru.practicum.error.ConflictException;
 import ru.practicum.error.NotFoundException;
 import ru.practicum.model.category.Category;
@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-//@Transactional
 @Slf4j
 public class MessageService {
 
@@ -49,7 +48,7 @@ public class MessageService {
     private final RequestRepository requestRepository;
 
     @Autowired
-    private final StatClient statClient;
+    private final StatService statService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -165,16 +164,15 @@ public class MessageService {
     @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public MessageCreateOut getMessageForPublic(long messageId, HttpServletRequest request) {
 
-        MessageCreateOut returmedMessage = MessageMapper.toMessageCreateOut(
-                messageRepository.findById(messageId)
-                        .orElseThrow(() ->
-                                new NotFoundException("Событие с идентификатором " + messageId + " не найдено")));
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
 
-        if (!returmedMessage.getState().equals(MessageStatus.PUBLISHED))
+        if (!message.getState().equals(MessageStatus.PUBLISHED))
             throw new NotFoundException("Событие " + messageId + " не найдено");
 
-        addHit("подробная информация", request, messageId); //добавляем событие
-        return returmedMessage;
+        message.setViews(addHit("detail", request.getRequestURI(), request.getRemoteAddr()));
+        messageRepository.save(message);
+        return MessageMapper.toMessageCreateOut(message);
     }
 
     @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
@@ -224,7 +222,7 @@ public class MessageService {
     public List<MessageShortOut> findPublicMessages(String text, List<Long> categoryList, Boolean paid,
                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                     Boolean onlyAvailable, String sort, int from, int size,
-                                                    HttpServletRequest request)  {
+                                                    HttpServletRequest request) {
 
         QMessage message = QMessage.message;
 
@@ -252,26 +250,16 @@ public class MessageService {
                 .offset(from)
                 .fetch();
 
-        addHit("общая информация", request, null); //добавляем событие
+        addHit("list", request.getRequestURI(), request.getRemoteAddr());
 
         return messages.stream()
                 .map(MessageMapper::toMessageShortOut)
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    private void addHit(String app, HttpServletRequest request, Long messageId) {
-
-        if (messageId != null) {
-            Message message = messageRepository.findById(messageId).orElseThrow(() ->
-                    new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
-            message.addView();
-            messageRepository.save(message);
-        }
-
-        HitIn hit = new HitIn(app, request.getRequestURI(), request.getRemoteAddr());
-        statClient.addHit(hit);
-
+    private Long addHit(String app, String uri, String ip) {
+        HitIn hit = new HitIn(app, uri, ip);
+        return statService.addHitAndGetStat(hit).block().getHits();
     }
 
 }
