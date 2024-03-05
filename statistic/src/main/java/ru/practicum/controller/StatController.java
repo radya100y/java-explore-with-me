@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.error.BadRequestException;
 import ru.practicum.model.EventIn;
 import ru.practicum.model.EventOut;
 import ru.practicum.model.EventsOut;
@@ -36,6 +37,9 @@ public class StatController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(required = false) String uris,
             @RequestParam(defaultValue = "false") Boolean unique) {
+
+        if (start.isAfter(end))
+            throw new BadRequestException("Неверно указан диапазон дат");
 
         List<String> urisList = new ArrayList<>();
         if (uris != null) {
