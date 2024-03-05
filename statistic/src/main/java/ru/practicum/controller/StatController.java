@@ -3,6 +3,7 @@ package ru.practicum.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.model.EventIn;
@@ -24,6 +25,7 @@ public class StatController {
     private final EventService eventService;
 
     @PostMapping(path = "/hit")
+    @ResponseStatus(HttpStatus.CREATED)
     public EventOut save(@Valid @RequestBody EventIn eventIn) {
         return eventService.save(eventIn);
     }
