@@ -1,7 +1,6 @@
 package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Slf4j
 public class PrivateController {
 
     @Autowired
@@ -44,7 +42,6 @@ public class PrivateController {
                 " некорректно указано кол-во участников");
         if (messageCreateIn.getRequestModeration() == null) messageCreateIn.setRequestModeration(true);
 
-//        log.warn(messageCreateIn.toString());
 
         return messageService.add(messageCreateIn, userId);
     }

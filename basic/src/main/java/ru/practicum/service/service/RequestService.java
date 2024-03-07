@@ -1,7 +1,6 @@
 package ru.practicum.service.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class RequestService {
 
     @Autowired
@@ -50,7 +48,6 @@ public class RequestService {
         if (!message.getState().equals(MessageStatus.PUBLISHED))
             throw new ConflictException("Нельзя оставить заявку на неопубликованное событие");
 
-//        log.info(message.toString() + " =========> " + message.getRequests().size());
         if ((requests.size() >= message.getParticipantLimit()) && (message.getParticipantLimit() > 0))
             throw new ConflictException("Лимит участников события превышен");
 
