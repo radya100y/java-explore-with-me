@@ -29,18 +29,19 @@ create table if not exists public.message
     , annotation varchar(2000)
     , category bigint references category(id) on delete restrict
     , description varchar(7000)
-    , event_date /*eventDate*/ timestamp without time zone
+    , event_date timestamp without time zone
     , lat float
     , lon float
     , paid bool
-    , participant_limit /*participantLimit*/ int
-    , request_moderation /*requestModeration*/ bool
+    , participant_limit int
+    , request_moderation bool
     , title varchar(120)
-    , created_on /*createdOn*/ timestamp without time zone default now()
-    , published_on /*publishedOn*/ timestamp without time zone
+    , created_on timestamp without time zone default now()
+    , published_on timestamp without time zone
     , initiator bigint references users(id) on delete cascade
     , state message_status not null default 'PENDING'
     , views bigint default 0
+    , rating bigint
 );
 
 create type if not exists request_status as enum('PENDING', 'APPROVED', 'REJECTED', 'CANCELED', 'CONFIRMED');
