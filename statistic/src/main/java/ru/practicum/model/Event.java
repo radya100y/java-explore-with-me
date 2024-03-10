@@ -1,6 +1,7 @@
 package ru.practicum.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "events", schema = "public")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Event {
 
     @Id
