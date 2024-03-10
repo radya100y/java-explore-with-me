@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import ru.practicum.model.message.Message;
-import ru.practicum.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,18 +14,19 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
+@IdClass(LikeId.class)
 public class Like {
 
-    @ManyToOne
-    @JoinColumn(name = "message_id")
-    private Message message;
+    @Id
+    @Column(name = "message_id")
+    private Long messageId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Id
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "rate")
-    private Integer rate;
+    private Long rate;
 
     @Column(name = "created_on")
     private LocalDateTime createdOn;

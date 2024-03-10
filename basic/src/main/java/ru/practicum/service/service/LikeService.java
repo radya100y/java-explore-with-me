@@ -7,7 +7,6 @@ import ru.practicum.error.NotFoundException;
 import ru.practicum.model.like.Like;
 import ru.practicum.model.like.LikeMapper;
 import ru.practicum.model.message.Message;
-import ru.practicum.model.user.User;
 
 import javax.transaction.Transactional;
 
@@ -24,29 +23,30 @@ public class LikeService {
     @Autowired
     private final MessageRepository messageRepository;
 
-    @Autowired
-    private final MessageService messageService;
-
     @Transactional
     public Like addLike(long messageId, long userId, boolean rate) {
 
-        User user = userRepository.findById(userId).orElseThrow(() ->
+        userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с идентификатором " + userId + "  не найден"));
 
         Message message = messageRepository.findById(messageId).orElseThrow(() ->
                 new NotFoundException("Событие с идентификатором " + messageId + " не найдено"));
 
-        Like like = likeRepository.findAllByMessage_IdAndUser_Id(messageId, userId).get(0);
+        Long rateIncr = rate ? 1L : -1L;
 
-        long ratingIncr = rate ? 1 : -1;
-        long ratingCur = message.getRating();
+        Like savedOrNewLike = likeRepository.findFirstByMessageIdAndUserId(messageId, userId)
+                .orElse(LikeMapper.toLike(messageId, userId, rateIncr));
+        savedOrNewLike.setRate(rateIncr);
 
-        if (like != null) {
-            ratingCur = like.getRate() == -1 ? 1 : -1;
-        }
-        message.setRating(ratingCur + ratingIncr);
+        Like savedLike = likeRepository.save(savedOrNewLike);
+
+        Long newRating = likeRepository.findAllByMessageId(messageId).stream()
+                .map(Like::getRate)
+                .mapToLong(x -> x)
+                .sum();
+        message.setRating(newRating);
         messageRepository.save(message);
 
-        return likeRepository.save(LikeMapper.toLike(message, user, rate));
+        return savedLike;
     }
 }

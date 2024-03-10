@@ -1,19 +1,17 @@
 package ru.practicum.model.like;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.model.message.Message;
-import ru.practicum.model.user.User;
 
 import java.time.LocalDateTime;
 
 @UtilityClass
 public class LikeMapper {
 
-    public static Like toLike(Message message, User user, Boolean rate) {
+    public static Like toLike(Long messageId, Long userId, Long rate) {
         return Like.builder()
-                .message(message)
-                .user(user)
-                .rate(rate ? 1 : -1)
+                .messageId(messageId)
+                .userId(userId)
+                .rate(rate)
                 .createdOn(LocalDateTime.now())
                 .build();
     }
