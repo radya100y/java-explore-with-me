@@ -19,47 +19,50 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-//@Transactional
 public class CategoryService {
 
     @Autowired
     private final CategoryRepository categoryRepository;
 
+    @Transactional
     public CategoryOut add(CategoryIn categoryIn) {
         try {
-            return CategoryMapper.toCategoryOut(categoryRepository.save(CategoryMapper.toCategory(categoryIn)));
+            return CategoryMapper.toCategoryOut(categoryRepository.saveAndFlush(
+                    CategoryMapper.toCategory(categoryIn)));
         } catch (DataIntegrityViolationException exc) {
             throw new ConflictException("Категория с именем " + categoryIn.getName() + " уже существует");
         }
     }
 
+    @Transactional
     public CategoryOut delete(long id) {
         CategoryOut category = getCategory(id);
         try {
             categoryRepository.deleteById(id);
+            categoryRepository.flush();
         } catch (DataIntegrityViolationException exc) {
             throw new ConflictException("Категория не может быть удалена");
         }
         return category;
     }
 
+    @Transactional
     public CategoryOut update(long id, CategoryIn categoryIn) {
         getCategory(id);
         try {
-            return CategoryMapper.toCategoryOut(categoryRepository.save(new Category(id, categoryIn.getName())));
+            return CategoryMapper.toCategoryOut(categoryRepository.saveAndFlush(
+                    new Category(id, categoryIn.getName())));
         } catch (DataIntegrityViolationException exc) {
             throw new ConflictException("Категория с именем " + categoryIn.getName() + " уже существует");
         }
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public CategoryOut getCategory(long id) {
         return categoryRepository.findById(id)
                 .map(CategoryMapper::toCategoryOut)
                 .orElseThrow(() -> new NotFoundException("Категория с идентификатором " + id + " не найдена"));
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<CategoryOut> gets(Pageable reqPage) {
         return categoryRepository.getAllLimitNoQueringMethod(reqPage).stream()
                 .map(CategoryMapper::toCategoryOut)

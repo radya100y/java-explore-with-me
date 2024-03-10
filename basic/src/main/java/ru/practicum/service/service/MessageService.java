@@ -51,6 +51,7 @@ public class MessageService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     public MessageCreateOut add(MessageCreateIn message, long userId) {
 
         Category category = categoryRepository.findById(message.getCategory()).orElseThrow(() ->
@@ -65,9 +66,10 @@ public class MessageService {
         Message savedMessage = MessageMapper.toMessage(message, category, user, new HashSet<>());
         savedMessage.setState(MessageStatus.PENDING);
 
-        return MessageMapper.toMessageCreateOut(messageRepository.save(savedMessage));
+        return MessageMapper.toMessageCreateOut(messageRepository.saveAndFlush(savedMessage));
     }
 
+    @Transactional
     public MessageCreateOut update(MessageUpdateIn message, long userId, long messageId) {
 
         Message oldMessage = messageRepository.findById(messageId)
@@ -97,9 +99,10 @@ public class MessageService {
             }
         }
 
-        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
+        return MessageMapper.toMessageCreateOut(messageRepository.saveAndFlush(oldMessage));
     }
 
+    @Transactional
     public MessageCreateOut updateAdmin(MessageUpdateIn message, long messageId) {
 
         Message oldMessage = messageRepository.findById(messageId)
@@ -133,10 +136,9 @@ public class MessageService {
             }
         }
 
-        return MessageMapper.toMessageCreateOut(messageRepository.save(oldMessage));
+        return MessageMapper.toMessageCreateOut(messageRepository.saveAndFlush(oldMessage));
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<MessageShortOut> getForInitiator(long userId, Pageable pageable) {
 
         return messageRepository.findAllByInitiator_Id(userId, pageable).stream()
@@ -144,14 +146,12 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public MessageCreateOut getMessage(long userId, long messageId) {
 
         return MessageMapper.toMessageCreateOut(messageRepository.findById(messageId).orElseThrow(() ->
                 new NotFoundException("Событие с идентификатором " + messageId + " не найдено")));
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<RequestOut> getRequestsForMessage(long userId, long messageId) {
 
         return requestRepository.findAllByEvent_Id(messageId).stream()
@@ -159,7 +159,6 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public MessageCreateOut getMessageForPublic(long messageId, HttpServletRequest request) {
 
         Message message = messageRepository.findById(messageId)
@@ -173,7 +172,6 @@ public class MessageService {
         return MessageMapper.toMessageCreateOut(message);
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<MessageCreateOut> findAdminMessages(List<Long> userList, List<MessageStatus> statusList,
                                                     List<Long> categoryList, LocalDateTime rangeStart,
                                                     LocalDateTime rangeEnd, int from, int size) {
@@ -216,7 +214,6 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<MessageShortOut> findPublicMessages(String text, List<Long> categoryList, Boolean paid,
                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                     Boolean onlyAvailable, String sort, int from, int size,

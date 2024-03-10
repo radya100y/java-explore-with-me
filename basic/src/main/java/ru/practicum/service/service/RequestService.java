@@ -29,7 +29,7 @@ public class RequestService {
     @Autowired
     private final MessageRepository messageRepository;
 
-//    @Transactional
+    @Transactional
     public RequestOut addRequest(long userId, long eventId) {
 
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -60,7 +60,7 @@ public class RequestService {
                         RequestStatus.PENDING)
                 .build();
         try {
-            return RequestMapper.toRequestOut(requestRepository.save(request));
+            return RequestMapper.toRequestOut(requestRepository.saveAndFlush(request));
         } catch (DataIntegrityViolationException exc) {
             throw new ConflictException("Нельзя создать несколько заявок на участие в событии");
         }
