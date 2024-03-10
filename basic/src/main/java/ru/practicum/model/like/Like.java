@@ -3,6 +3,7 @@ package ru.practicum.model.like;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import ru.practicum.model.message.Message;
 import ru.practicum.model.user.User;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@SuperBuilder
 public class Like {
 
     @ManyToOne

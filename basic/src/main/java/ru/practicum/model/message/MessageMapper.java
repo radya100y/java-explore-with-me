@@ -29,6 +29,7 @@ public class MessageMapper {
                 .createdOn(LocalDateTime.now())
                 .requests(requests)
                 .views(0L)
+                .rating(0L)
                 .build();
     }
 
