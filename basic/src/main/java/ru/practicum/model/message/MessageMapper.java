@@ -64,7 +64,8 @@ public class MessageMapper {
                 .initiator(UserMapper.toUserOutWithoutEmail(message.getInitiator()))
                 .paid(message.getPaid())
                 .title(message.getTitle())
-                .views(message.getViews()).build();
+                .views(message.getViews())
+                .rating(message.getRating()).build();
     }
 }
 
