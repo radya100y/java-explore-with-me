@@ -8,6 +8,8 @@ import ru.practicum.error.NotFoundException;
 import ru.practicum.model.like.Like;
 import ru.practicum.model.like.LikeMapper;
 import ru.practicum.model.message.Message;
+import ru.practicum.model.message.MessageMapper;
+import ru.practicum.model.message.MessageShortOut;
 import ru.practicum.model.request.RequestStatus;
 import ru.practicum.model.user.User;
 
@@ -32,7 +34,7 @@ public class LikeService {
     private final RequestRepository requestRepository;
 
     @Transactional
-    public Like addLike(long messageId, long userId, boolean rate) {
+    public MessageShortOut addLike(long messageId, long userId, boolean rate) {
 
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с идентификатором " + userId + "  не найден"));
@@ -46,8 +48,8 @@ public class LikeService {
                 .orElse(LikeMapper.toLike(messageId, userId, rateIncr, message.getInitiator().getId()));
         savedOrNewLike.setRate(rateIncr);
 
-        //Проверяем что текущая дата менее даты начала события, ИЛИ у пользователя есть одобренный реквест
-        if (message.getEventDate().isAfter(LocalDateTime.now()) ||
+        //Проверяем что событие прошло , И у пользователя есть одобренный реквест
+        if (message.getEventDate().isBefore(LocalDateTime.now()) &&
                 requestRepository.findAllByEvent_IdAndStatusIn(
                         messageId, List.of(RequestStatus.CONFIRMED, RequestStatus.APPROVED)).isEmpty()) {
             throw new ConflictException("Пользователь " + userId + " не может изменить рейтинг события " + messageId);
@@ -61,7 +63,7 @@ public class LikeService {
                 .mapToLong(x -> x)
                 .sum();
         message.setRating(messageRating);
-        messageRepository.save(message);
+        Message savedMessage = messageRepository.save(message);
 
         //Изменяем рейтинг у инициатора
         User initiator = message.getInitiator();
@@ -73,6 +75,6 @@ public class LikeService {
         initiator.setRating(userRating);
         userRepository.save(initiator);
 
-        return savedLike;
+        return MessageMapper.toMessageShortOut(savedMessage);
     }
 }

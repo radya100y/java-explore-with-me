@@ -114,7 +114,7 @@ public class PrivateController {
 
     @PostMapping("/{userId}/events/{eventId}/like")
     @ResponseStatus(HttpStatus.CREATED)
-    public Like addLike(@PathVariable("userId") long userId,
+    public MessageShortOut addLike(@PathVariable("userId") long userId,
                         @PathVariable("eventId") long eventId,
                         @RequestParam(defaultValue = "true") boolean rate) {
 
