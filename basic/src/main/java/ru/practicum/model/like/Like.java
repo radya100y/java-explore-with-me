@@ -30,4 +30,7 @@ public class Like {
 
     @Column(name = "created_on")
     private LocalDateTime createdOn;
+
+    @Column(name = "initiator_id")
+    private Long initiatorId;
 }

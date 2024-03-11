@@ -11,4 +11,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Optional<Like> findFirstByMessageIdAndUserId(Long messageId, Long userId);
 
     List<Like> findAllByMessageId(Long messageId);
+
+    List<Like> findAllByInitiatorId(Long userId);
 }

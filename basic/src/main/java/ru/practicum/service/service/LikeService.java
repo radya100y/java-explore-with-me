@@ -7,6 +7,7 @@ import ru.practicum.error.NotFoundException;
 import ru.practicum.model.like.Like;
 import ru.practicum.model.like.LikeMapper;
 import ru.practicum.model.message.Message;
+import ru.practicum.model.user.User;
 
 import javax.transaction.Transactional;
 
@@ -26,7 +27,7 @@ public class LikeService {
     @Transactional
     public Like addLike(long messageId, long userId, boolean rate) {
 
-        userRepository.findById(userId).orElseThrow(() ->
+        User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с идентификатором " + userId + "  не найден"));
 
         Message message = messageRepository.findById(messageId).orElseThrow(() ->
@@ -35,17 +36,28 @@ public class LikeService {
         Long rateIncr = rate ? 1L : -1L;
 
         Like savedOrNewLike = likeRepository.findFirstByMessageIdAndUserId(messageId, userId)
-                .orElse(LikeMapper.toLike(messageId, userId, rateIncr));
+                .orElse(LikeMapper.toLike(messageId, userId, rateIncr, message.getInitiator().getId()));
         savedOrNewLike.setRate(rateIncr);
 
         Like savedLike = likeRepository.save(savedOrNewLike);
 
-        Long newRating = likeRepository.findAllByMessageId(messageId).stream()
+        // Изменяем рейтинг у события
+        Long messageRating = likeRepository.findAllByMessageId(messageId).stream()
                 .map(Like::getRate)
                 .mapToLong(x -> x)
                 .sum();
-        message.setRating(newRating);
+        message.setRating(messageRating);
         messageRepository.save(message);
+
+        //Изменяем рейтинг у создателя мероприятия
+        User initiator = message.getInitiator();
+        Long userRating = likeRepository.findAllByInitiatorId(initiator.getId()).stream()
+                .map(Like::getRate)
+                .mapToLong(x -> x)
+                .sum();
+
+        initiator.setRating(userRating);
+        userRepository.save(initiator);
 
         return savedLike;
     }

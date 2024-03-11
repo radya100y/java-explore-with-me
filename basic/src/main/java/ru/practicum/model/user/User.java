@@ -32,8 +32,12 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Column(name = "rating")
+    private Long rating;
+
     public User(String name, String email) {
         this.name = name;
         this.email = email;
+        this.rating = 0L;
     }
 }
