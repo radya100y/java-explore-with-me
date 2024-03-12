@@ -240,7 +240,7 @@ public class MessageService {
                 .selectFrom(message)
                 .from(message)
                 .where(whereExpression)
-                .orderBy(sort == null || sort.equals("EVENT_DATE") ? message.eventDate.desc() : message.eventDate.asc())
+                .orderBy(sort == null || sort.equals("EVENT_DATE") ? message.eventDate.desc() : message.rating.desc())
                 .limit(size)
                 .offset(from)
                 .fetch();

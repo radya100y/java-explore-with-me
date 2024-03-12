@@ -22,4 +22,5 @@ public class MessageShortOut {
     private Boolean paid;
     private String title;
     private Long views;
+    private Long rating;
 }

@@ -16,7 +16,8 @@ public class UserMapper {
         return new UserOut(
                 user.getId(),
                 user.getName(),
-                user.getEmail()
+                user.getEmail(),
+                user.getRating()
         );
     }
 

@@ -14,6 +14,7 @@ import ru.practicum.model.message.MessageUpdateIn;
 import ru.practicum.model.request.RequestConfirmIn;
 import ru.practicum.model.request.RequestConfirmOut;
 import ru.practicum.model.request.RequestOut;
+import ru.practicum.service.service.LikeService;
 import ru.practicum.service.service.MessageService;
 import ru.practicum.service.service.RequestService;
 
@@ -30,6 +31,9 @@ public class PrivateController {
 
     @Autowired
     private final RequestService requestService;
+
+    @Autowired
+    private final LikeService likeService;
 
     @PostMapping("/{userId}/events")
     @ResponseStatus(HttpStatus.CREATED)
@@ -105,6 +109,15 @@ public class PrivateController {
     public List<RequestOut> getRequestsForEvent(@PathVariable("userId") long userId,
                                           @PathVariable("eventId") long eventId) {
         return messageService.getRequestsForMessage(userId, eventId);
+    }
+
+    @PostMapping("/{userId}/events/{eventId}/like")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MessageShortOut addLike(@PathVariable("userId") long userId,
+                        @PathVariable("eventId") long eventId,
+                        @RequestParam(defaultValue = "true") boolean rate) {
+
+        return likeService.addLike(eventId, userId, rate);
     }
 
 }

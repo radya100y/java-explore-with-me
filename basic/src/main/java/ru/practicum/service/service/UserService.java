@@ -23,40 +23,28 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public UserOut saveTransactional(UserIn userIn) {
-        return UserMapper.toUserOut(userRepository.save(UserMapper.toUser(userIn)));
-    }
-
-    public UserOut saveAndReturn(UserIn user) {
-        try {
-            return saveTransactional(user);
-        } catch (DataIntegrityViolationException exc) {
-            throw new ConflictException("Пользователь с адресом " + user.getEmail() + " уже существует");
-        }
-    }
-
     public UserOut add(UserIn userIn) {
         try {
-            return UserMapper.toUserOut(userRepository.save(UserMapper.toUser(userIn)));
+            return UserMapper.toUserOut(userRepository.saveAndFlush(UserMapper.toUser(userIn)));
         } catch (DataIntegrityViolationException exc) {
             throw new ConflictException("Пользователь с адресом " + userIn.getEmail() + " уже существует");
         }
     }
 
+    @Transactional
     public UserOut delete(long id) {
         UserOut user = get(id);
         userRepository.deleteById(id);
+        userRepository.flush();
         return user;
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public UserOut get(long id) {
         return userRepository.findById(id)
                 .map(UserMapper::toUserOut)
                 .orElseThrow(() -> new NotFoundException("Пользователь с идентификатором " + id + " не найден"));
     }
 
-    @Transactional(value = Transactional.TxType.NOT_SUPPORTED)
     public List<UserOut> gets(List<Long> ids, Pageable reqPage) {
 
         if (ids.size() == 0) {

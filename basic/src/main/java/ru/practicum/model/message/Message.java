@@ -80,6 +80,9 @@ public class Message {
     @Column(name = "views")
     private Long views;
 
+    @Column(name = "rating")
+    private Long rating;
+
     public long getConfirmedRequestQty() {
         return requests.stream().filter(x -> x.getStatus().equals(RequestStatus.CONFIRMED)).count();
     }
